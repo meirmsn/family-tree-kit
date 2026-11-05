@@ -1,0 +1,10 @@
+{
+  "name": "genealogy-kit-site",
+  "private": true,
+  "description": "Build-time dependencies for the genealogy-kit family-tree site (vendored into the output by build.py; nothing is loaded from a CDN)",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^7",
+    "fuse.js": "^7.5.0"
+  }
+}

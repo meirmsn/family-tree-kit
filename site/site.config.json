@@ -1,0 +1,18 @@
+{
+  "_comment": "Builds the bundled FICTIONAL example. For your own tree, copy example/site.config.example.json into your PRIVATE project folder and run build.py --config <that file>.",
+  "site_title": "Family tree",
+  "byline": "Fictional example family (all names and places are invented)",
+  "data_dir": "example/data",
+  "spec": "example/people_spec.py",
+  "out_dir": "../build/example-site",
+  "image_cache": "../build/.image-cache",
+  "publish": "strict",
+  "cloudflare": {
+    "project": "",
+    "account_id": "",
+    "access_team_domain": "",
+    "production_url": "",
+    "custom_domain": "",
+    "branch": "main"
+  }
+}
