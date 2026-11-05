@@ -11,15 +11,11 @@ place and record in this repository belongs to an invented example family.
 
 ![Fan chart](docs/screenshot-desktop.png)
 
-| | |
-|---|---|
-| ![Person panel and hover tip for the same person](docs/screenshot-panel.png) | ![Record open, with why it matters](docs/screenshot-desktop-evidence.png) |
+<p align="center"><img src="docs/screenshot-panel.png" width="49%" alt="Person panel and hover tip for the same person"> <img src="docs/screenshot-desktop-evidence.png" width="49%" alt="Record open, with why it matters"></p>
 
 ### Mobile
 
-| | | | |
-|---|---|---|---|
-| ![Fan chart and people list](docs/screenshot-phone.png) | ![Fan chart](docs/screenshot-phone-fan.png) | ![Person panel](docs/screenshot-phone-panel.png) | ![Record and why it matters](docs/screenshot-phone-evidence.png) |
+<p align="center"><img src="docs/screenshot-phone-fan.png" width="32%" alt="Fan chart"> <img src="docs/screenshot-phone-panel.png" width="32%" alt="Person panel"> <img src="docs/screenshot-phone-evidence.png" width="32%" alt="Record and why it matters"></p>
 
 *All names, places and records in these screenshots are invented.*
 
