@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="googlebot" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+<title>{{SITE_TITLE}}</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Family Tree">
+<meta name="application-name" content="Family Tree">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="{{assets/app.css}}">
+<link rel="stylesheet" href="{{assets/responsive.css}}">
+<link rel="stylesheet" href="{{assets/pwa.css}}">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="5"/><path d="M16 11V4M11 16H4M21 16h7M12.5 12.5 7 7M19.5 12.5 25 7" /></svg>
+      <div>
+        <h1>{{SITE_TITLE}}</h1>
+        <p class="sub">{{BYLINE}}</p>
+      </div>
+    </div>
+    <div class="gsearch" id="gsearch">
+      <button type="button" class="icon-btn gs-open" id="gs-open" aria-label="Search people, places and records" title="Search (/)">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg></button>
+      <div class="gs-box" role="search">
+        <svg class="gs-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
+        <input id="gs-q" type="search" role="combobox" aria-expanded="false" aria-controls="gs-list" aria-autocomplete="list"
+          aria-label="Search people, places and records" placeholder="Search people, places, records…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+        <kbd class="gs-kbd" aria-hidden="true">/</kbd>
+        <button type="button" class="gs-cancel" id="gs-cancel">Cancel</button>
+        <div class="gs-pop" id="gs-pop" hidden>
+          <div id="gs-list" role="listbox" aria-label="Search results"></div>
+          <p class="gs-status" id="gs-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="top-tools">
+    <nav class="jump" aria-label="Sections">
+      <a href="#people">People</a><a href="#questions">Open questions</a><a href="#requests">Archive requests</a>
+    </nav>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <section class="viz" aria-label="Ancestor fan chart">
+    <div class="viz-bar">
+      <div class="legend" id="legend" aria-label="Colour legend"></div>
+      <div class="viz-tools">
+        <div class="seg seg-sm" id="fan-colour" role="group" aria-label="Colour the fan chart">
+          <button data-colour="line" aria-pressed="true">Family line</button>
+          <button data-colour="conf" aria-pressed="false">Confidence</button>
+        </div>
+        <button class="icon-btn" id="zoom-out" title="Zoom out" aria-label="Zoom out"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10"/></svg></button>
+        <button class="icon-btn" id="zoom-in" title="Zoom in" aria-label="Zoom in"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg></button>
+        <button class="icon-btn wide" id="zoom-reset" title="Fit the whole chart" aria-label="Fit the whole chart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg><span>Fit</span></button>
+      </div>
+    </div>
+    <div class="stage">
+      <div id="fan" class="view"></div>
+      <p class="hint" id="hint"><span class="h-mouse">Hover for a summary · click for details · scroll or pinch to zoom · drag to pan · double-click to zoom in</span><span class="h-touch">Tap a name for details · pinch to zoom · drag to pan · double-tap to zoom in</span></p>
+    </div>
+  </section>
+
+  <section class="card-section" id="people" aria-labelledby="people-h">
+    <div class="section-head">
+      <h2 id="people-h">People</h2>
+      <div class="filters">
+        <label class="search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
+          <input id="q" type="search" placeholder="Search names, places, sources…" autocomplete="off" aria-label="Search people"></label>
+        <select id="f-line" aria-label="Filter by line"></select>
+        <select id="f-conf" aria-label="Filter by confidence"></select>
+      </div>
+    </div>
+    <div class="conf-key" id="table-key"></div>
+    <div class="table-wrap"><table class="people" id="people-table">
+      <thead><tr><th>Name</th><th>Relation</th><th>Born</th><th>Died</th><th>Places</th><th>Confidence</th><th>Sources</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="muted small" id="people-count"></p>
+  </section>
+
+  <div class="two-col">
+    <section class="card-section" id="questions" aria-labelledby="q-h">
+      <h2 id="q-h">Open questions</h2>
+      <ul class="qlist" id="qlist"></ul>
+      <p class="muted small" id="q-more"></p>
+    </section>
+    <section class="card-section" id="requests" aria-labelledby="r-h">
+      <h2 id="r-h">Archive requests</h2>
+      <ul class="reqs" id="reqs"></ul>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <p>Last updated <time datetime="{{LAST_UPDATED_ISO}}">{{LAST_UPDATED}}</time> · Private family page — please do not share.</p>
+  <p class="muted small" id="privacy-rule"></p>
+  <section class="app-box" id="app-box" aria-label="Use as an app" hidden>
+    <p class="app-h">Use as an app</p>
+    <button type="button" class="btn sm" id="app-install" hidden>Install app</button>
+    <p class="small" id="app-ios" hidden>iPhone/iPad: open this page in <b>Safari</b>, tap <b>Share</b> <span aria-hidden="true">(□↑)</span> → <b>Add to Home Screen</b> → <b>Add</b>. The first time you open the app you may need to sign in again.</p>
+    <p class="small" id="app-installed" hidden>Running as an installed app.</p>
+    <span class="app-off"><button type="button" class="btn ghost sm" id="app-offline" hidden></button>
+    <span class="small muted" id="app-offline-status" aria-live="polite"></span></span>
+  </section>
+  <p class="muted small">Charts: D3 (ISC). Search: Fuse.js (Apache-2.0). Fan chart inspired by magicsunday/webtrees-fan-chart. Licences in <a href="vendor/LICENSES.txt">vendor/LICENSES.txt</a>.</p>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<aside class="panel" id="panel" aria-hidden="true" aria-labelledby="panel-name" role="dialog" tabindex="-1">
+  <div class="panel-sticky" id="panel-sticky">
+    <div class="panel-top">
+      <div class="panel-grip" id="panel-grip" aria-hidden="true"><span></span></div>
+      <button type="button" class="panel-back" id="panel-back" aria-label="Back to the previous page" title="Back (Alt+←)" hidden>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6"/></svg><span>Back</span></button>
+      <span class="pt-space"></span>
+      <button type="button" class="cite-toggle" id="cite-toggle" aria-pressed="false" title="Show source references (S-numbers) next to each fact">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11.5 2.5V6H15M7.5 10h5M7.5 13h5"/></svg>
+        <span class="ct-label">Sources</span><span class="ct-switch" aria-hidden="true"><span></span></span>
+      </button>
+      <button class="panel-close" id="panel-close" aria-label="Close details">×</button>
+    </div>
+    <div class="panel-head" id="panel-head"></div>
+  </div>
+  <div id="panel-body"></div>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Record viewer" hidden>
+  <div class="lb-main">
+    <div class="lb-stage"><img class="lb-img" alt="" draggable="false"></div>
+    <div class="lb-bar">
+      <button class="lb-btn lb-prev" aria-label="Previous document" title="Previous document — Use ← → keys"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6"/></svg></button>
+      <span class="lb-count" aria-live="polite"></span>
+      <button class="lb-btn lb-next" aria-label="Next document" title="Next document — Use ← → keys"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6"/></svg></button>
+      <span class="lb-sep"></span>
+      <button class="lb-btn lb-zout" aria-label="Zoom out" title="Zoom out (−)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10"/></svg></button>
+      <button class="lb-btn lb-zin" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg></button>
+      <button class="lb-btn lb-fit" aria-label="Fit image" title="Fit (0)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg></button>
+      <span class="lb-imgnote"></span>
+    </div>
+    <button class="lb-btn lb-close" aria-label="Close viewer (Esc)" title="Close (Esc)"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button>
+  </div>
+  <div class="lb-info" tabindex="0" aria-label="About this record"></div>
+</div>
+
+<div class="app-update" id="app-update" role="status" hidden>A new version of the site is ready. <button type="button" class="btn sm" id="app-update-btn">Reload</button></div>
+<div class="offline-badge" role="status">Offline · showing the saved copy</div>
+
+<script src="{{assets/pwa.js}}"></script>
+<script src="{{vendor/d3.min.js}}"></script>
+<script src="{{assets/fan.js}}"></script>
+<script src="{{assets/viewer.js}}"></script>
+<script src="{{vendor/fuse.min.js}}"></script>
+<script src="{{assets/search.js}}"></script>
+<script src="{{assets/app.js}}" data-json="{{data/family.json}}" data-search="{{data/search.json}}"></script>
+</body>
+</html>

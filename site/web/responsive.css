@@ -1,0 +1,58 @@
+/* v8/v9 responsive layer: phones, tablets, touch, safe areas. Loaded after app.css. */
+html, body { overflow-x: hidden; }
+@supports (overflow: clip) { html, body { overflow-x: clip; } }
+/* safe areas (notch, home indicator, landscape side insets) */
+.top-inner { padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+.top { padding-top: env(safe-area-inset-top); }
+main { padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+.foot { padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+.lb-close { top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); }
+.h-touch { display: none; }
+@media (hover: none) and (pointer: coarse) { .h-mouse { display: none; } .h-touch { display: inline; } }
+/* touch / tablet: tap targets at least 44px */
+@media (pointer: coarse), (max-width: 1024px) {
+  .icon-btn, .lb-btn { width: 44px; height: 44px; }
+  .icon-btn.wide { width: auto; min-width: 44px; }
+  .seg button, .seg-sm button { min-height: 44px; }
+  .panel-close { width: 44px; height: 44px; font-size: 24px; }
+  .panel-back, .panel-top .cite-toggle { height: 44px; }
+  .panel-back { padding: 0 14px 0 10px; }
+  .gs-opt { min-height: 44px; justify-content: center; }
+  .gs-cancel { min-height: 44px; }
+  .plink, .cf[data-cfh] { padding-block: 2px; }
+  .panel .fam .rel, .ofam .of-row { min-height: 44px; }
+  .ofam .of-src, .gs-clear { min-height: 36px; }
+  .filters select, .search input { min-height: 44px; }
+  .lb-close { width: 52px; height: 52px; border-radius: 50%; }
+  .lb-close svg { width: 22px; height: 22px; }
+}
+@media (max-width: 640px) {
+  main { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  .top-inner { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
+  .stage { height: min(72vh, 100vw + 60px); height: min(72dvh, 100vw + 60px); min-height: 360px; }
+  .seg-sm button { padding: 0 10px; font-size: 12.5px; }
+  .viz-tools { flex-wrap: nowrap; gap: 6px; }
+  .viz-tools .icon-btn.wide { padding: 0 8px; }
+  .sub { white-space: normal; font-size: 12px; }
+}
+/* phone + tablet portrait: bottom sheet up to near full screen, close always reachable */
+@media (max-width: 720px), (max-width: 1024px) and (orientation: portrait) {
+  .panel { max-height: calc(100dvh - max(24px, env(safe-area-inset-top))); max-height: calc(100vh - 24px); }
+  @supports (height: 100dvh) { .panel { max-height: calc(100dvh - max(24px, env(safe-area-inset-top))); } }
+  .panel { padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+  .lightbox { padding-top: env(safe-area-inset-top); }
+  .lb-bar { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); gap: 8px; }
+}
+@media (min-width: 721px) and (max-width: 1024px) and (orientation: portrait) {
+  .panel { left: max(0px, calc(50% - 390px)); right: max(0px, calc(50% - 390px)); width: auto; }
+  .lightbox { grid-template-rows: minmax(0, 62fr) minmax(0, 38fr); }
+}
+/* tablet landscape: panel sits beside the chart (chart re-centres away from it) */
+@media (min-width: 1025px) and (max-width: 1279px) { .panel { width: 380px; top: calc(70px + env(safe-area-inset-top)); } }
+/* installed app (standalone): no browser chrome, keep header clear of the status bar */
+@media (display-mode: standalone) { .top { padding-top: env(safe-area-inset-top); } }
+
+/* v9: fixed-size controls never shrink on narrow phones; small buttons reach 44px on touch */
+.viz-tools .icon-btn { flex: none; }
+@media (max-width: 400px) { .viz-tools { gap: 4px; } .seg-sm button { padding: 0 8px; } }
+@media (pointer: coarse) { .btn.sm, .src-card .btn { min-height: 44px; } }

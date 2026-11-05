@@ -1,0 +1,44 @@
+# Public-safe, NAME-BLIND privacy check for pull requests.
+#
+# This workflow runs on a public repository, so it must never see or print private data:
+#  - it loads NO private word list (no secrets, no GENEALOGY_PRIVATE_WORDS, no --words/--project);
+#  - it checks only generic shapes: secret-like tokens, forbidden paths (genealogy-trees/, .work/,
+#    private-words.txt, real people_spec.py / site.config*.json, private records paths) and images
+#    outside the fictional example folders;
+#  - on failure it prints only a generic "privacy check failed" summary (counts per category),
+#    never a path, line or matched text.
+# The name check with the private word list runs LOCALLY only (pre-commit / pre-push hooks and the
+# agent's pre-PR sweep); see SECURITY.md §5.
+name: public privacy check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  name-blind:
+    runs-on: ubuntu-latest
+    env:
+      GENEALOGY_PRIVATE_WORDS: ""
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Secrets + path quarantine (no word list; generic output only)
+        run: python3 tools/privacy_grep.py . --public-ci --history
+      - name: Tool tests (fictional data only)
+        run: python3 -m unittest discover -s tools/tests
+      - name: Build the fictional example site
+        run: |
+          python3 -m pip install --quiet pillow
+          (cd site && npm ci --no-audit --no-fund --silent)
+          python3 -m unittest discover -s site/tests
+          python3 site/build.py

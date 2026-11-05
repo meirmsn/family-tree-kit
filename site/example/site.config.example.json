@@ -1,0 +1,21 @@
+{
+  "_comment": "Copy to <project>/site/site.config.json (PRIVATE; tools/new_project.py does this for you). Paths are relative to this file. No secrets here: the API token comes only from the CLOUDFLARE_API_TOKEN environment variable.",
+  "site_title": "Family tree",
+  "byline": "",
+  "data_dir": "..",
+  "spec": "people_spec.py",
+  "out_dir": "../.work/site-build",
+  "image_cache": "../.work/image-cache",
+  "publish": "strict",
+  "living_years": 120,
+  "record_years": 100,
+  "cloudflare": {
+    "project": "ft-<10 random hex characters, e.g. from: python3 -c 'import secrets;print(secrets.token_hex(5))'>",
+    "account_id": "<your Cloudflare account id (not secret)>",
+    "access_team_domain": "<your-team>.cloudflareaccess.com",
+    "production_url": "",
+    "custom_domain": "",
+    "branch": "main",
+    "wrangler": "npx --yes wrangler@3"
+  }
+}

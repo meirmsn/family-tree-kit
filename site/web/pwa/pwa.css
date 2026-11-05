@@ -1,0 +1,24 @@
+/* PWA UI: "Use as an app" footer box, offline badge, new-version notice. */
+.app-box { margin: 14px 0 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.app-box[hidden] { display: none; }
+.app-box .app-h { flex: 1 0 100%; margin: 0; font-weight: 650; color: var(--ink); }
+.app-box p { margin: 0; flex: 1 1 260px; }
+.app-box [hidden] { display: none !important; }
+.app-off { display: inline-flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.app-box .btn:disabled { opacity: .6; cursor: default; filter: none; }
+@media (pointer: coarse), (max-width: 1024px) { .app-box .btn { min-height: 44px; } }
+.offline-badge {
+  display: none; position: fixed; z-index: 95; left: 50%; transform: translateX(-50%);
+  top: calc(8px + env(safe-area-inset-top)); padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+  background: var(--ink); color: var(--surface); box-shadow: 0 6px 20px rgba(0,0,0,.25); pointer-events: none;
+}
+html.is-offline .offline-badge { display: block; }
+.app-update {
+  position: fixed; z-index: 96; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom));
+  display: flex; gap: 10px; align-items: center; padding: 8px 8px 8px 14px; border-radius: 14px; font-size: 13.5px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 12px 34px rgba(0,0,0,.22);
+  max-width: calc(100vw - 24px);
+}
+.app-update[hidden] { display: none; }
+@media (pointer: coarse) { .app-update .btn { min-height: 44px; } }

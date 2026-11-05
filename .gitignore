@@ -1,0 +1,11 @@
+# build output and caches
+build/
+node_modules/
+__pycache__/
+*.pyc
+.cache/
+# never commit private data or configs (they belong in the private project, e.g. ~/genealogy-trees/<tree>/)
+site/site.config.local.json
+private-words.txt
+*.private.*
+.env
