@@ -1,6 +1,6 @@
 # Family research project — PRIVATE
 
-Created {{DATE}} from genealogy-kit. Home person: {{HOME}} (P1).
+Created {{DATE}} from Family Tree Kit. Home person: {{HOME}} (P1).
 **Personal data. Never copy any of this folder into the public kit or any public place.**
 
 - IDs: P people · S sources · U family testimony · C collateral. Labels: confirmed / probable / possible / lore.

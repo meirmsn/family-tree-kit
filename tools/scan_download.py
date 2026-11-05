@@ -20,7 +20,7 @@ import urllib.error
 import urllib.request
 
 MAGIC = (b"\xff\xd8\xff", b"\x89PNG", b"II*\x00", b"MM\x00*", b"%PDF")
-UA = "genealogy-kit/1.0 (personal family research; polite single requests)"
+UA = "family-tree-kit/1.0 (personal family research; polite single requests)"
 
 
 def main():

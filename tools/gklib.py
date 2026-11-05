@@ -1,4 +1,4 @@
-"""Shared helpers for the genealogy-kit tools (no personal paths, no network).
+"""Shared helpers for the Family Tree Kit tools (no personal paths, no network).
 
 Project folder layout: see templates/README.md. Every tool takes the project folder as an argument.
 """

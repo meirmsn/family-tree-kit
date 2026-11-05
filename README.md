@@ -1,4 +1,4 @@
-# genealogy-kit
+# Family Tree Kit
 
 A research kit for **long-running AI agents** that trace a family's ancestry as far back as the
 records go — with every claim tied to a record the user can open — and, optionally, publish it as a
@@ -40,7 +40,7 @@ On phone or desktop, open the published URL (behind your login), use the browser
 
 ### Option 1 — Point your Grok Bot at this repo
 Paste this into Grok Bot:
-> Set up genealogy research for my family using the genealogy-kit repository at `<repo URL or path>`.
+> Set up genealogy research for my family using the family-tree-kit repository at `<repo URL or path>`.
 > Read AGENT.md and follow it step by step: create a private data folder, save the rules to memory,
 > then interview me one question at a time. Use free sources first, contact no one, and ask me
 > before any login, payment, archive letter or website deploy.
@@ -66,7 +66,7 @@ python3 -m unittest discover -s tools/tests
 
 ## How it fits together
 ```
-genealogy-kit/  (this repo, public, no personal data)       ~/genealogy-trees/<tree>/  (PRIVATE, created by the agent)
+family-tree-kit/  (this repo, public, no personal data)       ~/genealogy-trees/<tree>/  (PRIVATE, created by the agent)
   AGENT.md  METHODOLOGY.md  agent/  templates/  tools/  ──►    people.md sources.md records/ collateral/ drafts/ …
   site/build.py  site/web/  ◄── reads ───────────────────────  site/people_spec.py  site/site.config.json
         │
@@ -95,13 +95,13 @@ genealogy-kit/  (this repo, public, no personal data)       ~/genealogy-trees/<t
 
 ## Inspiration
 
-Anthony Pompliano wrote about setting up a **Genealogist Bot** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
+[Anthony Pompliano](https://x.com/APompliano) wrote about setting up a **Genealogist Bot** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
 
-[Anthony Pompliano — Genealogist Bot (X)](https://x.com/APompliano/status/2116967151537996188)
+[Anthony Pompliano](https://x.com/APompliano) — [Genealogist Bot (X)](https://x.com/APompliano/status/2116967151537996188)
 
 [![Anthony Pompliano’s public post about using a Genealogist Bot with Grok Bot](docs/inspiration-pompliano.png)](https://x.com/APompliano/status/2116967151537996188)
 
-*Screenshot of [Pompliano’s public post](https://x.com/APompliano/status/2116967151537996188) (GitHub README does not reliably render live X embeds, so the image is included for the feed view; click through for the original).*
+*Screenshot of [Pompliano](https://x.com/APompliano)’s [public post](https://x.com/APompliano/status/2116967151537996188) (GitHub README does not reliably render live X embeds, so the image is included for the feed view; click through for the original).*
 
 In spite of that — individuals already doing this with Grok Bot — **we created this project so anyone can do it**: the research method, agent instructions, templates, tools, and a private family-tree site kit, not gatekept to one person’s bot.
 

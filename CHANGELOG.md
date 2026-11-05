@@ -9,7 +9,7 @@
 - Tests for the env var, path quarantine, generic CI output, tracked-list refusal and both hooks (fictional words only).
 
 ## v0.2.9 (2026-11-05)
-- README: **Inspiration** — Anthony Pompliano’s public Genealogist Bot post (screenshot in `docs/inspiration-pompliano.png` + link; GitHub rarely renders X embeds), framed so that in spite of individuals already doing this with Grok Bot, the kit exists so **anyone** can: method + private tree site, not gatekept to one person’s bot.
+- README: **Inspiration** — [Anthony Pompliano](https://x.com/APompliano)’s public Genealogist Bot post (screenshot in `docs/inspiration-pompliano.png` + link; GitHub rarely renders X embeds), framed so that in spite of individuals already doing this with Grok Bot, the kit exists so **anyone** can: method + private tree site, not gatekept to one person’s bot.
 - README: notes a **future** distributed volunteer / distributed-compute archive idea (optional lightweight text findings, proofs, links; minimal processed snippets only if images; no personal trees in a central store). **Not implemented** in this kit.
 - Credits unchanged in substance: generous D3 (Mike Bostock / contributors), documented webtrees-fan-chart look inspiration, Fuse.js + Pillow core, Playwright optional for example screenshots only.
 

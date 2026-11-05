@@ -21,7 +21,7 @@ def check(url, team):
     u = urllib.parse.urlparse(url)
     conn = (http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection)(u.hostname, u.port, timeout=30)
     try:
-        conn.request("GET", u.path or "/", headers={"User-Agent": "genealogy-kit access check"})
+        conn.request("GET", u.path or "/", headers={"User-Agent": "family-tree-kit access check"})
         r = conn.getresponse()
         loc = r.getheader("Location") or ""
         host = urllib.parse.urlparse(loc).hostname or ""

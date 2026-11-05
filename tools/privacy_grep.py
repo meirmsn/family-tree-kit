@@ -45,7 +45,7 @@ from gklib import is_project  # noqa: E402
 
 LEGACY_WORDS = os.path.expanduser("~/.config/genealogy-kit/private-words.txt")
 ENV_WORDS = "GENEALOGY_PRIVATE_WORDS"
-HOOK_MARK = "# genealogy-kit privacy_grep hook"
+HOOK_MARK = "# family-tree-kit privacy_grep hook"
 MIN_WORD_LEN = 5
 SECRETS = [
     ("Cloudflare-style API token assignment", r"(?i)(cloudflare|cf)_?(api)?_?token\s*[=:]\s*['\"]?[A-Za-z0-9_\-]{30,}"),

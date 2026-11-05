@@ -54,7 +54,7 @@ def stamp(im):
     d = ImageDraw.Draw(im, "RGBA")
     w, h = im.size
     d.rectangle([0, h - 70, w, h], fill=(150, 20, 20, 210))
-    d.text((24, h - 56), "FICTIONAL SAMPLE — NOT A REAL RECORD (genealogy-kit example)", fill="white", font=font(30))
+    d.text((24, h - 56), "FICTIONAL SAMPLE — NOT A REAL RECORD (Family Tree Kit example)", fill="white", font=font(30))
 
 
 def register(path, heading, seed):

@@ -17,7 +17,7 @@ step 1. This file is written for **Grok Bot**; §"Other agents" maps each capabi
 ---
 
 ## Step 0 — Get the kit (read-only)
-- Clone or copy this repo anywhere on your machine (e.g. `~/genealogy-kit`; any path works, every
+- Clone or copy this repo anywhere on your machine (e.g. `~/family-tree-kit`; any path works, every
   tool finds the kit from its own location). Treat it as **read-only reference**: never write
   personal data into it, never push from it.
 - Check prerequisites: `python3 -c "import PIL"`, `node --version`, `curl --version`. Install what is
@@ -147,7 +147,7 @@ user picks them; each one reports only when something new happened.
 | Archive letters | drafts in `drafts/`; if the user wants them in their mailbox, create a draft there; the user presses send |
 
 **Setup prompt to paste into Grok Bot:**
-> Set up genealogy research for my family using the genealogy-kit repository at `<repo URL or path>`.
+> Set up genealogy research for my family using the family-tree-kit repository at `<repo URL or path>`.
 > Read AGENT.md and follow it step by step: create a private data folder, save the rules to memory,
 > then interview me one question at a time. Use free sources first, contact no one, and ask me
 > before any login, payment, archive letter or website deploy.

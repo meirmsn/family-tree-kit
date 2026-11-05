@@ -3,7 +3,7 @@
 One entry per pass, newest last.
 
 ## Pass 0 ({{DATE}}; project created)
-- Created from genealogy-kit templates.
+- Created from Family Tree Kit templates.
 
 <!-- Template:
 ## Pass N (YYYY-MM-DD HH:MM–HH:MM; S-range; P-range; append-only)

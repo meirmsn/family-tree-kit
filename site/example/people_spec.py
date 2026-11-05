@@ -1,4 +1,4 @@
-"""FICTIONAL EXAMPLE spec for the genealogy-kit site.
+"""FICTIONAL EXAMPLE spec for the Family Tree Kit site.
 
 Every person, place, date, archive and record in this file and in example/data/ is INVENTED for
 demonstration. The countries ("Velmar", "Ardenia"), towns and archives do not exist; URLs use the

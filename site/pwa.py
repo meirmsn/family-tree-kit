@@ -1,4 +1,4 @@
-"""PWA pieces of the genealogy-kit site build: icons, web app manifest and the service worker.
+"""PWA pieces of the Family Tree Kit site build: icons, web app manifest and the service worker.
 
 build.py calls  write_pwa(out_dir, web_dir, precache_rel_paths)  after everything else is in place.
 

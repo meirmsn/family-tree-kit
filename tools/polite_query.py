@@ -25,7 +25,7 @@ import time
 import urllib.parse
 import urllib.request
 
-UA = "genealogy-kit/1.0 (personal family research; polite single requests)"
+UA = "family-tree-kit/1.0 (personal family research; polite single requests)"
 JRI = "https://legacy.jri-poland.org/databases/jridetail_2.php?gub={gub}&srch1={name}&srch1v=S&srch1t={t}"
 
 

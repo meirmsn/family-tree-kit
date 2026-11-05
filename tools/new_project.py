@@ -141,7 +141,7 @@ def main():
     with open(os.path.join(dst, ".gitignore"), "w") as f:
         f.write(".work/\n.backups/\n*.bak*\n__pycache__/\n")
     with open(os.path.join(dst, MARKER), "w") as f:
-        json.dump({"kind": "genealogy-kit project", "created": today,
+        json.dump({"kind": "family-tree-kit project", "created": today,
                    "note": "Tools never descend into a folder with this file. Do not nest projects."}, f, indent=2)
         f.write("\n")
     if a.git:

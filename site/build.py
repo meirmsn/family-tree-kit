@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a private family-tree static site from a genealogy-kit project folder.
+"""Build a private family-tree static site from a Family Tree Kit project folder.
 
     python3 site/build.py                         # build the bundled FICTIONAL example (site/site.config.json)
     python3 site/build.py --config PATH           # build your own tree (config lives in your PRIVATE folder)
