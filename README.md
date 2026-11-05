@@ -123,3 +123,4 @@ The data structure, person panel and record lightbox were designed for this kit;
 ## Licence
 MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
 D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
+Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTICE).
