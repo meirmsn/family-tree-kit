@@ -3,13 +3,16 @@
 
     python3 tools/screenshot_interactive.py build/example-site docs/
     python3 tools/screenshot_interactive.py build/example-site docs/ --tip-only
+    python3 tools/screenshot_interactive.py build/example-site docs/ --evidence-only
 
-Writes screenshot-phone-fan.png, screenshot-phone-panel.png, screenshot-phone-evidence.png and
-screenshot-panel.png (unless --tip-only, which only rewrites the desktop panel shot). The visible
-text of each shot is printed so it can be checked for real names. Refuses unless DATA.example is true.
+Writes screenshot-phone-fan.png, screenshot-phone-panel.png, screenshot-phone-evidence.png,
+screenshot-panel.png and screenshot-desktop-evidence.png. --tip-only rewrites only the desktop
+panel shot; --evidence-only rewrites only the desktop record viewer. The visible text of each
+shot is printed so it can be checked for real names. Refuses unless DATA.example is true.
 
-The desktop shot opens the person panel and the fan-chart hover tip for the same off-centre
+The desktop panel shot opens the person panel and the fan-chart hover tip for the same off-centre
 generation-2 grandparent (prefer maternal, then paternal) — never the centre home person.
+The desktop evidence shot opens a record image with its "Why this record matters" text.
 """
 import functools, http.server, json, os, re, sys, threading
 from playwright.sync_api import sync_playwright
@@ -150,14 +153,35 @@ def _shot_panel_with_tip(page, shot):
     shot(page, "screenshot-panel.png")
 
 
+def _shot_desktop_evidence(page, base, shot):
+    """Record image open beside its 'Why this record matters' text (fictional example only)."""
+    page.goto(base + "#person=p4")
+    page.wait_for_selector("#panel.open .thumb", timeout=8000)
+    page.locator("#panel .thumb").first.click()
+    page.wait_for_selector("#lightbox:not([hidden]) .lb-why", timeout=8000)
+    page.wait_for_function(
+        """() => {
+            const img = document.querySelector('#lightbox .lb-img');
+            const why = document.querySelector('#lightbox .lb-why');
+            const src = (img && (img.currentSrc || img.src)) || '';
+            return !!(img && img.complete && img.naturalWidth > 200 && !src.includes('/t/')
+                      && why && /why this record matters/i.test(why.innerText));
+        }""",
+        timeout=8000)
+    title = page.locator("#lightbox .lb-title").inner_text().strip()
+    why = page.locator("#lightbox .lb-why").inner_text().strip().splitlines()[0:3]
+    print("=== evidence:", title)
+    print("=== why:", " ".join(why))
+    shot(page, "screenshot-desktop-evidence.png")
+
+
 def main():
     argv = sys.argv[1:]
-    tip_only = False
-    if "--tip-only" in argv:
-        tip_only = True
-        argv = [a for a in argv if a != "--tip-only"]
+    tip_only = "--tip-only" in argv
+    evidence_only = "--evidence-only" in argv
+    argv = [a for a in argv if a not in ("--tip-only", "--evidence-only")]
     if len(argv) < 2:
-        raise SystemExit("usage: screenshot_interactive.py SITE_DIR OUT_DIR [--tip-only]")
+        raise SystemExit("usage: screenshot_interactive.py SITE_DIR OUT_DIR [--tip-only|--evidence-only]")
     site, out = os.path.abspath(argv[0]), argv[1]
     data = json.load(open(os.path.join(site, "data", "family.json"), encoding="utf-8"))
     if not data.get("example"):
@@ -174,7 +198,7 @@ def main():
             page.wait_for_timeout(900)
             page.screenshot(path=os.path.join(out, name))
             print("=== wrote", name); print(page.evaluate("document.body.innerText"))
-        if not tip_only:
+        if not tip_only and not evidence_only:
             phone = dict(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
             p = b.new_page(**phone); p.goto(base); p.wait_for_selector(".fan-seg"); shot(p, "screenshot-phone-fan.png")
             p.goto(base + "#person=p4"); p.wait_for_timeout(1200)
@@ -187,7 +211,13 @@ def main():
             shot(p, "screenshot-phone-evidence.png")
         d = b.new_page(viewport={"width": 1400, "height": 1000})
         d.goto(base)
-        _shot_panel_with_tip(d, shot)
+        if evidence_only:
+            _shot_desktop_evidence(d, base, shot)
+        elif tip_only:
+            _shot_panel_with_tip(d, shot)
+        else:
+            _shot_panel_with_tip(d, shot)
+            _shot_desktop_evidence(d, base, shot)
         b.close()
     srv.shutdown()
 

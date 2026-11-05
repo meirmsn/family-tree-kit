@@ -11,7 +11,9 @@ place and record in this repository belongs to an invented example family.
 
 ![Fan chart](docs/screenshot-desktop.png)
 
-![Person panel and hover tip for the same person](docs/screenshot-panel.png)
+| | |
+|---|---|
+| ![Person panel and hover tip for the same person](docs/screenshot-panel.png) | ![Record open, with why it matters](docs/screenshot-desktop-evidence.png) |
 
 ### Mobile
 
@@ -58,7 +60,7 @@ store, cron, numbered question, report file).
 cd site && npm install && cd ..
 python3 site/build.py                     # builds the fictional example into build/example-site/
 python3 tools/screenshot.py build/example-site docs --require-example   # optional
-python3 tools/screenshot_interactive.py build/example-site docs [--tip-only]   # optional; panel + hover tip (and the mobile shots unless --tip-only); needs `pip install playwright` + Chrome
+python3 tools/screenshot_interactive.py build/example-site docs [--tip-only|--evidence-only]   # optional; panel + hover tip, desktop evidence (mobile shots unless a flag); needs `pip install playwright` + Chrome
 python3 -m unittest discover -s site/tests
 python3 -m unittest discover -s tools/tests
 ```
