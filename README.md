@@ -15,7 +15,7 @@ place and record in this repository belongs to an invented example family.
 
 ### Mobile
 
-<p align="center"><img src="docs/screenshot-phone-fan.png" width="32%" alt="Fan chart"> <img src="docs/screenshot-phone-panel.png" width="32%" alt="Person panel"> <img src="docs/screenshot-phone-evidence.png" width="32%" alt="Record and why it matters"></p>
+<p align="center"><img src="docs/screenshot-phone-fan.png" width="30%" alt="Fan chart">&nbsp;&nbsp;&nbsp;<img src="docs/screenshot-phone-panel.png" width="30%" alt="Person panel">&nbsp;&nbsp;&nbsp;<img src="docs/screenshot-phone-evidence.png" width="30%" alt="Record and why it matters"></p>
 
 *All names, places and records in these screenshots are invented.*
 
