@@ -9,18 +9,17 @@ relatives and archive requests), the **agent instructions**, empty **templates**
 files, small **tools**, and the **site generator**. It contains **no personal data**: every name,
 place and record in this repository belongs to an invented example family.
 
-![Fan chart of the fictional example family](docs/screenshot-desktop.png)
+![Fan chart](docs/screenshot-desktop.png)
 
-| Person panel (fictional example) | Phone layout |
-|---|---|
-| ![Person panel](docs/screenshot-panel.png) | ![Phone](docs/screenshot-phone.png) |
+![Person panel and hover tip for the same person](docs/screenshot-panel.png)
 
-| Phone: fan chart | Phone: person panel | Phone: record + why it matters | Desktop: hover tip |
+### Mobile
+
+| | | | |
 |---|---|---|---|
-| ![Phone fan](docs/screenshot-phone-fan.png) | ![Phone panel](docs/screenshot-phone-panel.png) | ![Phone evidence](docs/screenshot-phone-evidence.png) | ![Desktop tip](docs/screenshot-desktop-tip.png) |
+| ![Fan chart and people list](docs/screenshot-phone.png) | ![Fan chart](docs/screenshot-phone-fan.png) | ![Person panel](docs/screenshot-phone-panel.png) | ![Record and why it matters](docs/screenshot-phone-evidence.png) |
 
-*All screenshots show the fictional example in `site/example/` ("Velmar", "Ardenia" and every
-person in it are invented; the record images are generated placeholders).*
+*All names, places and records in these screenshots are invented.*
 
 ## Install the private site as an app (PWA)
 The generated site ships a web app manifest, service worker and fan-chart home-screen icons.
@@ -59,7 +58,7 @@ store, cron, numbered question, report file).
 cd site && npm install && cd ..
 python3 site/build.py                     # builds the fictional example into build/example-site/
 python3 tools/screenshot.py build/example-site docs --require-example   # optional
-python3 tools/screenshot_interactive.py build/example-site docs [--tip-only]   # optional; needs `pip install playwright` + Chrome
+python3 tools/screenshot_interactive.py build/example-site docs [--tip-only]   # optional; panel + hover tip (and the mobile shots unless --tip-only); needs `pip install playwright` + Chrome
 python3 -m unittest discover -s site/tests
 python3 -m unittest discover -s tools/tests
 ```

@@ -18,8 +18,8 @@ Python 3 standard library, plus Pillow where noted.
 | `polite_query.py URL | jri GUB SURNAME` | index queries with per-host pauses, cache, decoy check (`--verify`), bot-wall stop |
 | `access_check.py URL… | --config CFG` | Cloudflare Access 302 check (for the daily routine) |
 | `privacy_grep.py REPO [--words FILE] [--project PROJECT] [--history] [--install-hook] [--public-ci]` | per-project word list (`PROJECT/.work/private-words.txt`, or `$GENEALOGY_PRIVATE_WORDS` pointing outside the kit) + secret patterns + path quarantine; whole-word plus simple suffixes (-s/-es/'s/-er/-ers; list other name variants explicitly), min 5 letters; **fails** if the list is missing or empty of usable words, or tracked inside the scanned repo. `--install-hook` writes local **pre-commit and pre-push** hooks. `--public-ci`: name-blind mode for public CI (no word list; secrets + forbidden path shapes + non-example images; generic output only) — see SECURITY.md §5.1 |
-| `screenshot.py SITE_DIR OUT_DIR --require-example` (Chrome) | screenshots of the fictional example on a random free port |
-| `screenshot_interactive.py SITE OUT [--tip-only]` (Playwright + Chrome) | interactive shots of the fictional example only (phone fan/panel/evidence + desktop hover tip on a generation-2 grandfather); refuses unless `DATA.example` |
+| `screenshot.py SITE_DIR OUT_DIR --require-example` (Chrome) | desktop fan chart and narrow-screen layout of the fictional example, on a random free port |
+| `screenshot_interactive.py SITE OUT [--tip-only]` (Playwright + Chrome) | fictional example only: narrow-screen fan, panel and record shots, plus `screenshot-panel.png` with the person panel and the hover tip open for the same generation-2 grandfather. `--tip-only` rewrites just that desktop shot. Refuses unless `DATA.example` |
 | `gklib.py` | shared parsers (front matter, sources.md, people.md links with the reset fix), project boundaries (never descend into a nested project), `Unused:` lines, transcription placeholders, archive unit ids |
 
 Projects: a folder with `.genealogy-project` (written by new_project.py), or with both `people.md` and
