@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-Third-party code: the site build vendors D3 (ISC licence) and Fuse.js
-(Apache License 2.0) from node_modules into each build's vendor/ folder, with
-their licence texts in vendor/LICENSES.txt. They keep their own licences; the
-MIT licence above does not apply to them. The fan chart design was inspired by
-magicsunday/webtrees-fan-chart (no code copied).
-Licence choice for the docs (MIT, or CC BY 4.0 for the Markdown) is still open.

@@ -9,18 +9,15 @@ relatives and archive requests), the **agent instructions**, empty **templates**
 files, small **tools**, and the **site generator**. It contains **no personal data**: every name,
 place and record in this repository belongs to an invented example family.
 
-![Fan chart of the fictional example family](docs/screenshot-desktop.png)
+![Fan chart](docs/screenshot-desktop.png)
 
-| Person panel (fictional example) | Phone layout |
-|---|---|
-| ![Person panel](docs/screenshot-panel.png) | ![Phone](docs/screenshot-phone.png) |
+<p align="center"><img src="docs/screenshot-panel.png" width="49%" alt="Person panel and hover tip for the same person"> <img src="docs/screenshot-desktop-evidence.png" width="49%" alt="Record open, with why it matters"></p>
 
-| Phone: fan chart | Phone: person panel | Phone: record + why it matters | Desktop: hover tip |
-|---|---|---|---|
-| ![Phone fan](docs/screenshot-phone-fan.png) | ![Phone panel](docs/screenshot-phone-panel.png) | ![Phone evidence](docs/screenshot-phone-evidence.png) | ![Desktop tip](docs/screenshot-desktop-tip.png) |
+### Mobile
 
-*All screenshots show the fictional example in `site/example/` ("Velmar", "Ardenia" and every
-person in it are invented; the record images are generated placeholders).*
+<p align="center"><img src="docs/screenshot-phone-fan.png" width="30%" alt="Fan chart">&nbsp;&nbsp;&nbsp;<img src="docs/screenshot-phone-panel.png" width="30%" alt="Person panel">&nbsp;&nbsp;&nbsp;<img src="docs/screenshot-phone-evidence.png" width="30%" alt="Record and why it matters"></p>
+
+*All names, places and records in these screenshots are invented.*
 
 ## Install the private site as an app (PWA)
 The generated site ships a web app manifest, service worker and fan-chart home-screen icons.
@@ -59,7 +56,7 @@ store, cron, numbered question, report file).
 cd site && npm install && cd ..
 python3 site/build.py                     # builds the fictional example into build/example-site/
 python3 tools/screenshot.py build/example-site docs --require-example   # optional
-python3 tools/screenshot_interactive.py build/example-site docs [--tip-only]   # optional; needs `pip install playwright` + Chrome
+python3 tools/screenshot_interactive.py build/example-site docs [--tip-only|--evidence-only]   # optional; panel + hover tip, desktop evidence (mobile shots unless a flag); needs `pip install playwright` + Chrome
 python3 -m unittest discover -s site/tests
 python3 -m unittest discover -s tools/tests
 ```
@@ -124,3 +121,4 @@ The data structure, person panel and record lightbox were designed for this kit;
 ## Licence
 MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
 D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
+Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTICE).

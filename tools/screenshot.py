@@ -3,8 +3,10 @@
 
     python3 tools/screenshot.py SITE_DIR OUT_DIR [--require-example]
 
-OUT_DIR is a FOLDER: three files are written into it (screenshot-desktop.png, screenshot-phone.png,
-screenshot-panel.png). Example: python3 tools/screenshot.py build/example-site docs/ --require-example
+OUT_DIR is a FOLDER: screenshot-desktop.png is written into it. The narrow-screen shots
+(fan, person panel, record viewer) and the desktop panel and evidence shots are written by
+screenshot_interactive.py. Example:
+python3 tools/screenshot.py build/example-site docs/ --require-example
 
 The server is started in-process on a port chosen by the OS (never a fixed port: another agent may
 already be serving a different, private site on 8000/8765). Before shooting, it fetches
@@ -24,8 +26,7 @@ import sys
 import threading
 import urllib.request
 
-SHOTS = [("screenshot-desktop.png", "1400,1000", ""), ("screenshot-phone.png", "390,844", ""),
-         ("screenshot-panel.png", "1400,1000", "#person=p4")]
+SHOTS = [("screenshot-desktop.png", "1400,1000", "")]
 
 
 def chrome():

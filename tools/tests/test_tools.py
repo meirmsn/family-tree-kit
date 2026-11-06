@@ -509,7 +509,7 @@ class PrivacyLayers(unittest.TestCase):
     def test_quarantine_shapes(self):
         q = self.pg.quarantine_category
         for ok in ("site/example/people_spec.py", "site/site.config.json", "templates/records/INDEX.md",
-                   "site/example/data/records/a/x.jpg", "docs/screenshot-phone.png", "site/web/favicon.svg",
+                   "site/example/data/records/a/x.jpg", "docs/screenshot-phone-fan.png", "site/web/favicon.svg",
                    "tools/privacy_grep.py", "README.md"):
             self.assertIsNone(q(ok), ok)
         for bad in ("genealogy-trees/t/people.md", "x/.work/private-words.txt", "private-words.txt",
