@@ -70,3 +70,8 @@ These are the non-negotiables. Every worker brief repeats them. METHODOLOGY.md Â
     with a cited record spelling, when an alias has no source, and when two people share a
     near-identical name and close birth years with no possible-match or exclusion entry.
 
+18. **When the kit updates, run the upgrade command; don't hand-migrate.**
+    `python3 <kit>/tools/upgrade.py <project>` (`--dry-run` shows the plan). Migrations may only
+    reshape data structures (add empty fields, rename keys, move entries). They must never change
+    relationships, facts, or confidence levels, and never merge people.
+
