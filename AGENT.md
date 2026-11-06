@@ -24,6 +24,23 @@ step 1. This file is written for **Grok Bot**; §"Other agents" maps each capabi
   missing (`python3 -m pip install pillow`; Node 18+). Then `cd site && npm install`.
 - Smoke test: `python3 site/build.py` builds the **fictional** example into `build/example-site/`.
 
+## When the kit updates
+When the kit updates, run the upgrade command; don't hand-migrate.
+
+```
+python3 tools/upgrade.py <project>          # add --dry-run to see what would run
+```
+
+The command backs up the project into `<project>/.backups/` (never `/tmp`), reads `<project>/KIT_VERSION`
+(a missing file means the oldest version), runs only the scripts in `migrations/` that are newer than
+that version, writes the kit version, then runs `check_ids` and the site build. It exits non-zero if
+those checks fail.
+
+Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must
+never change relationships, facts, or confidence levels, and never merge people. Most releases have
+no migration file. This is the kit-version upgrade, not `tools/migrate_helper.py` (that one imports
+an existing research folder).
+
 ## Step 1 — Create the private data folder
 ```
 python3 tools/new_project.py ~/genealogy-trees/<tree-name> --home-person "<home person's full name>" [--git]
@@ -152,6 +169,7 @@ user picks them; each one reports only when something new happened.
 - Offer choices at decision points ("What next? (a) questions for relatives (b) request to archive X
   (c) searches needing your login").
 - Before anything leaves the machine: `tools/check_ids.py <project> --strict` and `tools/privacy_grep.py` (per-project `--project`, `--words` or `$GENEALOGY_PRIVATE_WORDS`). Before any pull request to the kit: `privacy_grep.py <kit> --history` with the word list **and** `--public-ci --history`, both 0 hits; local pre-commit + pre-push hooks installed (`--install-hook`). Never paste private words or matches into a PR, comment or CI log (SECURITY.md §5.1).
+- When the kit updates, run the upgrade command; don't hand-migrate (`python3 tools/upgrade.py <project>`).
 
 ---
 
@@ -183,3 +201,8 @@ user picks them; each one reports only when something new happened.
 | Page (canvas) | a Markdown/HTML report file the user can open |
 | memory | a `MEMORY.md` the agent re-reads at every start, plus the project README status |
 | routine | cron / systemd timer / the platform's scheduler, running the routine's brief |
+
+## Release checklist
+- Bump `VERSION`, and add a changelog entry.
+- If a release changes data shape, add a migration file (`migrations/v0_2_16.py` is the pattern). Most releases have none.
+- Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must never change relationships, facts, or confidence levels, and never merge people.

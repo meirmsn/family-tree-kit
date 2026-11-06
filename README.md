@@ -129,7 +129,8 @@ See [FEATURES.md](FEATURES.md) and [SECURITY.md](SECURITY.md).
 | [SECURITY.md](SECURITY.md) | privacy rules, Access-before-data, token scope, the privacy sweep |
 | [agent/](agent/) | rules, interview guide, worker brief template and pass briefs, routines, source catalogue by region |
 | [templates/](templates/) | empty research files, sidecar example, collateral rules |
-| [tools/](tools/) | project setup, backups, ID checks, sidecars and indexes, scans, polite queries, Access check, privacy sweep |
+| [tools/](tools/) | project setup, backups, upgrades, ID checks, sidecars and indexes, scans, polite queries, Access check, privacy sweep |
+| [migrations/](migrations/) | data-shape scripts the upgrade command runs, one file per version that needs one |
 | [site/](site/) | the generator (`build.py`, `pwa.py`, `web/`), config, the fictional example, tests |
 
 ## Privacy
@@ -157,6 +158,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 ## Build log
 
 ### Research and data
+- **v0.2.18** — `tools/upgrade.py` backs up a project, runs any data-shape migrations newer than `KIT_VERSION`, and runs the id and build checks. v0.2.16 and v0.2.17 migrations add empty spec fields when they are missing.
 - **v0.2.17** — name spelling: the title follows the earliest or most official record; a family spelling goes in parentheses and does not replace it. `check_ids.py` and the build warn when a title disagrees with a cited record spelling, an alias has no source, or two near-identical names with close birth years have no possible-match or exclusion entry.
 - **v0.2.16** — record every known sibling and their parents (shared parents, or an explicit sibling list with citation and confidence). `check_ids.py` and the site build warn when those people are not linked, a sibling link is not reciprocal, or a panel would show fewer siblings than the files record.
 - **v0.1.0** — first kit: method, agent instructions, templates, tools, fictional example, migration feedback from earlier research work.
@@ -244,6 +246,10 @@ python3 tools/screenshot_interactive.py build/example-site docs [--tip-only|--ev
 python3 -m unittest discover -s site/tests
 python3 -m unittest discover -s tools/tests
 ```
+
+### Upgrading
+
+When the kit updates, run `python3 tools/upgrade.py <project>` (`--dry-run` shows what would run). It backs up the project inside that folder, applies any newer scripts in `migrations/`, writes `KIT_VERSION`, and runs `check_ids` and the site build. Don't hand-migrate.
 
 ### Install the private site as an app (PWA)
 

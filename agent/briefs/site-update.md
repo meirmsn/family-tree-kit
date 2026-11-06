@@ -1,5 +1,7 @@
 # Brief: site update
 
+When the kit updates, run `python3 <kit>/tools/upgrade.py <project>` first; don't hand-migrate.
+
 1. Read `site/SPEC.md` in the kit. Edit only the **private** `<project>/site/people_spec.py`.
    Every value must come from people.md / sources.md / sidecars; cite sources in `src` and `FIELDS`.
 2. `python3 <kit>/tools/check_ids.py <project> --spec <project>/site/people_spec.py --strict` → 0 errors, 0 warnings.

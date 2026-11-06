@@ -122,6 +122,18 @@ A second record that might be the same person (a different spelling, or the same
 
 Record it in `NAME_FORMS` on the spec: `record`, `record_source`, optional `record_kind` and `record_year`, `family`, optional `family_source`, and `aliases` (each `name` with a `source`). Schema and the warnings: `site/SPEC.md`. `tools/check_ids.py --spec` and the site build warn when the title does not follow a cited record spelling, when an alias has no source, and when two people share a near-identical name and close birth years with no possible-match or exclusion entry. The check does not merge anyone.
 
+### 2.10 Upgrading the kit
+
+When the kit updates, run the upgrade command; don't hand-migrate.
+
+```
+python3 <kit>/tools/upgrade.py <project>
+```
+
+The command backs up the project into `<project>/.backups/` (never `/tmp`), reads `KIT_VERSION` in the project (if that file is missing, the data is treated as the oldest version), runs only the migration scripts in the kit's `migrations/` folder that are newer than that version, writes the new version, then runs `tools/check_ids.py` and the site build. `--dry-run` shows what would run and writes nothing. The command exits non-zero if the checks fail.
+
+Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must never change relationships, facts, or confidence levels, and never merge people. Most releases have no migration. A release that changes the data shape adds one small file, for example `migrations/v0_2_16.py`.
+
 ---
 
 ## 3. The iterative recursive search loop

@@ -1,5 +1,12 @@
 # Changelog
 
+Release checklist: if a release changes data shape, add a migration file under `migrations/`. Most releases have none. Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must never change relationships, facts, or confidence levels, and never merge people.
+
+## v0.2.18 (2026-11-06)
+- **Upgrade command.** `python3 tools/upgrade.py <project>` backs the project up into `<project>/.backups/` (never `/tmp`), reads `KIT_VERSION` (missing means the oldest version), runs only the `migrations/` scripts newer than that version, writes the kit version, then runs `check_ids` and the site build. `--dry-run` shows what would run. The command exits non-zero if the checks fail. When the kit updates, run this; don't hand-migrate.
+- **v0.2.16 migration** adds empty `FAMILY_ASSERTIONS`, `SIBLING_EXCLUSIONS`, and `CANONICAL_ALIASES` when those names are absent. **v0.2.17 migration** adds empty `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS` when those names are absent. Both are no-ops when the fields are already there. Neither one changes relationships, facts, or confidence, and neither merges people.
+
+
 ## v0.2.17 (2026-11-06)
 - **Name spelling.** The title uses the spelling on the earliest or most official record (a civil or church birth, marriage, or death act outranks an index, a transcription, or a secondary source). A different family spelling is shown in parentheses — `Record Spelling (Family Spelling)` — and kept as a search hint. It never replaces the record. If no record exists yet, the family spelling is the title. Every other documented spelling is listed under **Also recorded as**, each with its source.
 - A suspected same person stays unmerged. The panel says **Possible match**. A merge is only `CANONICAL_ALIASES`, and only after the user says the two records are one person. `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS` record the spellings, the candidates, and the pairs that are not the same person.

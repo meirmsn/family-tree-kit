@@ -5,6 +5,7 @@ They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow th
 
 ## 1. Backups before edits; append-only logs
 - Before any pass touches a data file (tree/people file, research log), copy it to a numbered backup (`file.md.bakNN`, or `tools/backup.py`).
+- When the kit updates, run `python3 tools/upgrade.py <project>`; don't hand-migrate. Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must never change relationships, facts, or confidence levels, and never merge people.
 - After that, only **append** to logs. Never rewrite or delete earlier entries; correct by adding a dated correction entry.
 - Save after every step, so an interrupted session loses at most one step.
 
