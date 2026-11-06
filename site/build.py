@@ -42,7 +42,7 @@ sys.path.insert(0, HERE)
 import pwa  # noqa: E402  (icons, manifest, service worker)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
 from gklib import (is_placeholder, other_family_warnings, process_note_warnings,  # noqa: E402
-                   project_files)  # shared with tools/check_ids.py
+                   process_sidecar_warnings, project_files)  # shared with tools/check_ids.py
 
 WEB = os.path.join(HERE, "web")
 NM = os.path.join(HERE, "node_modules")
@@ -659,6 +659,9 @@ def build_people(sources, people_md, warnings):
         warnings.append(w)
     for w in other_family_warnings(spec.PEOPLE, getattr(spec, "RELATIVES", {}) or {},
                                    getattr(spec, "OTHER_FAMILY", {}) or {}, people_md):
+        warnings.append(w)
+    # cwd is the project folder during build()
+    for w in process_sidecar_warnings("."):
         warnings.append(w)
     return people
 

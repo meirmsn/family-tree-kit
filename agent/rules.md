@@ -48,5 +48,7 @@ These are the non-negotiables. Every worker brief repeats them. METHODOLOGY.md �
     relatives. Each gets a person entry (with a confidence label and the record's link); index-only
     hits stay leads; living or recent people stay name-only. Put them on the site via
     `OTHER_FAMILY` / `RELATIVES` so siblings and other children appear in panels
-    (`docs/research-process-lessons.md` §9).
+    (`docs/research-process-lessons.md` §9). Person `note=` text and record **Why this record
+    matters** / Notes / Summary describe only the person or record — never migration or build
+    process.
 

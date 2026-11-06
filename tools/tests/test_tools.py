@@ -539,6 +539,51 @@ class SpecOtherFamilyAndNotes(unittest.TestCase):
         self.assertIn("mention siblings/children about", out)
 
 
+    def test_process_word_in_why_matters_warns(self):
+        # minimal sidecar with process wording in Why this record matters
+        rec_dir = os.path.join(self.p, "records", "ashdown")
+        os.makedirs(rec_dir, exist_ok=True)
+        write(os.path.join(rec_dir, "1925_S1.md"),
+              "---\n"
+              "s_number: S1\n"
+              "title: \"A record\"\n"
+              "date: \"\"\n"
+              "place: \"\"\n"
+              "record_type: \"birth\"\n"
+              "language: \"English\"\n"
+              "archive_ref: \"\"\n"
+              "archive_unit: \"\"\n"
+              "url: \"\"\n"
+              "image_files: []\n"
+              "people: []\n"
+              "facts_supported: []\n"
+              "related_sources: []\n"
+              "translation_status: \"skipped (English)\"\n"
+              "collateral: false\n"
+              "---\n"
+              "# S1 — A record\n\n"
+              "## Why this record matters\n\n"
+              "Written during migration from the old trees snapshot.\n\n"
+              "## Notes / discrepancies\n\n"
+              "None.\n")
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person.'),\n"
+            " dict(id='p2', pid='P2', name='Father', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Mother', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\n"
+            "RELATIVES = {'ida': dict(name='Ida', conf='confirmed', src=['S1'],"
+            " note='Born 1923; named on the same birth act.')}\n"
+            "OTHER_FAMILY = {'p1': [('Siblings', 'ida', 'Sister')]}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)  # warn-only
+        self.assertIn("process word", out)
+        self.assertIn("Why this record matters", out)
+        self.assertRegex(out, r"migrat|snapshot")
+
 
 class FreshProject(unittest.TestCase):
     def test_check_ids_clean_on_brand_new_project(self):

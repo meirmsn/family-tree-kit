@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.14 (2026-11-06)
+- Process-word lint also covers record sidecars: **Why this record matters**, Notes / discrepancies, and Summary (same stems as `note=`). Site-facing text must describe only the person or record, not migration/build process.
+
 ## v0.2.13 (2026-11-06)
 - Site confidence legend: color the words themselves (`confirmed` / `probable` / `possible` / `family lore` with the LORE pill) instead of sample date values like "1912", which looked like real profile dates.
 

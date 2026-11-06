@@ -27,6 +27,7 @@ Checks
   person's `line` matches the primary child's line (generation 3+), or the line implied by the
   child and sex (grandparents: pp/pm/mp/mm; parents: paternal/maternal). Also (warnings): PERSON and
   RELATIVES `note=` must not contain process stems (migrat/clone/copied/snapshot/generated/kit/build);
+  record sidecar "Why this record matters" / Notes / Summary use the same stems;
   OTHER_FAMILY/RELATIVES should not be empty or much thinner than siblings/children named in notes or
   people.md (see docs/research-process-lessons.md §9 and tools/gklib.py).
 Exit code 1 if any ERROR (with --strict, warnings count too).
@@ -41,7 +42,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gklib import (DERIVED, ID_RE, TRANSLATION_STATUSES, UNUSED_LINE, body_sections, declared_unused,  # noqa: E402
                    enclosing_project, front_matter, is_placeholder, num, other_family_warnings,
-                   process_note_warnings, project_files, read, sidecars, source_entries, strip_comments)
+                   process_note_warnings, process_sidecar_warnings, project_files, read, sidecars, source_entries, strip_comments)
 
 
 
@@ -256,6 +257,8 @@ def main():
         info.append(f"{len(missing)} source(s) without a sidecar (run tools/sidecars.py stubs): {', '.join(missing[:10])}")
     if seen:
         info.append(f"sidecars: {len(seen)}; with a real transcription: {n_done}; status pending: {n_pending}")
+    for w in process_sidecar_warnings(P):
+        warns.append(w)
 
     if a.spec:
         check_spec(a.spec, defined, errors, warns, info, people_md=people_md)

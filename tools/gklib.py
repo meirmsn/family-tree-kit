@@ -343,21 +343,52 @@ SIB_CHILD_MENTION_RE = re.compile(
 _OTHER_FAMILY_GROUPS = ("siblings", "other children")
 
 
+def _process_hits(label, text):
+    """Return warn strings for process stems found in text (empty if clean)."""
+    if not text:
+        return []
+    m = PROCESS_NOTE_RE.search(text)
+    if not m:
+        return []
+    return [f"{label}: process word {m.group(0)!r} — "
+            f"site-facing text should describe only the person or record, not migration/build process"]
+
+
 def process_note_warnings(people, relatives=None):
     """Warn when a PEOPLE or RELATIVES note= looks like process text, not a person summary."""
     out = []
     for p in people or []:
-        note = p.get("note") or ""
-        m = PROCESS_NOTE_RE.search(note)
-        if m:
-            out.append(f"spec {p.get('id', '?')}.note: process word {m.group(0)!r} — "
-                       f"notes should describe only the person and what the records show")
+        out.extend(_process_hits(f"spec {p.get('id', '?')}.note", p.get("note") or ""))
     for key, q in (relatives or {}).items():
-        note = (q or {}).get("note") or ""
-        m = PROCESS_NOTE_RE.search(note)
-        if m:
-            out.append(f"spec RELATIVES[{key!r}].note: process word {m.group(0)!r} — "
-                       f"notes should describe only the person and what the records show")
+        out.extend(_process_hits(f"spec RELATIVES[{key!r}].note", (q or {}).get("note") or ""))
+    return out
+
+
+# Record-sidecar sections that appear on the private site (lightbox / "why it matters").
+_PROCESS_SIDECAR_SECTIONS = (
+    "Why this record matters",
+    "Notes / discrepancies",
+    "Summary (from sources.md)",
+    "Summary",
+)
+
+
+def process_sidecar_warnings(project):
+    """Warn when a record sidecar's site-facing sections contain process stems.
+
+    Covers 'Why this record matters', Notes / discrepancies, and Summary — site-facing
+    fields that should describe only the record, not migration or build process. Uses the
+    same stems as process_note_warnings.
+    """
+    out = []
+    for path, _fm in sidecars(project):
+        body = front_matter(read(path))[1]
+        sec = body_sections(body)
+        rel = os.path.relpath(path, project)
+        for heading in _PROCESS_SIDECAR_SECTIONS:
+            if heading not in sec:
+                continue
+            out.extend(_process_hits(f"{rel} §{heading}", sec[heading]))
     return out
 
 

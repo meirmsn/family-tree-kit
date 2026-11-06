@@ -28,8 +28,9 @@ mismatch.
 
 > `OTHER_FAMILY` auto-wiring: a relative listed under a fan person's `Siblings…` group is also added to each of that person's on-fan parents as `Other children` (Brother→Son, Sister→Daughter, qualifiers kept) unless the parent already lists that key. Half-siblings are not propagated. The build prints every derived entry. Confidence/sources stay on `RELATIVES`.
 > `check_ids.py --spec` and the build warn (not fail) when `OTHER_FAMILY`/`RELATIVES` are empty or
-> much thinner than siblings/children named in notes or `people.md`, and when a `note=` contains
-> process stems (`migrat`, `clone`, `copied`, `snapshot`, `generated`, `kit`, `build`). See
+> much thinner than siblings/children named in notes or `people.md`, and when a `note=` or a
+> record sidecar's **Why this record matters** / Notes / Summary contains process stems
+> (`migrat`, `clone`, `copied`, `snapshot`, `generated`, `kit`, `build`). See
 > `docs/research-process-lessons.md` §9.
 
 `child`: the id of the person this one is a parent of (`None` for the home person), **or a list of
