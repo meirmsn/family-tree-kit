@@ -1,5 +1,4 @@
 """Build the fictional example and check the output. Run: python3 -m unittest discover -s site/tests"""
-import datetime as dt
 import glob
 import json
 import os
@@ -183,46 +182,45 @@ class BuildExample(unittest.TestCase):
             pseudo_sources=build.spec.PSEUDO_SOURCES)
         self.assertEqual(warns, [])
 
-    def test_how_to_read_shows_kit_version_line(self):
-        """Fictional example: the person-panel How to read legend can show the kit version and build date."""
+    def test_footer_shows_kit_version_before_last_updated(self):
+        """Fictional example: the footer leads with the kit version, then the existing last-updated date."""
         line = build.kit_version_line()
-        self.assertRegex(line, r"^v\d+(?:\.\d+)* \d{1,2}/\d{1,2}/\d{2}$")
+        self.assertEqual(line, "v" + build.kit_version())
         self.assertNotIn("updated", line.lower())
-        self.assertEqual(re.findall(r"[A-Za-z]+", line), ["v"])
+        self.assertRegex(self.data["lastUpdated"], r"^\d{1,2} [A-Z][a-z]{2} \d{4}$")
         html = open(os.path.join(self.out, "index.html"), encoding="utf-8").read()
-        self.assertIn(f'<meta name="kit-version-line" content="{line}">', html)
+        self.assertIn(
+            f'<span id="kit-version">{line}</span> · Last updated '
+            f'<time datetime="{self.data["lastUpdatedISO"]}">{self.data["lastUpdated"]}</time>',
+            html)
         self.assertNotIn("{{KIT_VERSION_LINE}}", html)
+        self.assertNotIn("Use as an app", html)
+        self.assertIn("Save for offline use", html)
+        self.assertIn("Saves this site on the device for offline viewing.", html)
+        self.assertIn("Add it to the home screen and it opens like an app.", html)
+        self.assertIn("That saves the site for offline viewing, and it opens like an app.", html)
         js = open(os.path.join(self.out, "assets", "app.js"), encoding="utf-8").read()
         self.assertIn(f'let text = "{line}";', js)
-        self.assertNotIn("{{KIT_VERSION_LINE}}", js)
         self.assertIn("function kitVersionLine()", js)
-        self.assertIn("versionHtml + `</div>`", js)
-        self.assertIn("${confKey(true)}", js)
-        self.assertIn('confKey(true, { version: false })', js)
-        self.assertEqual(js.count("confKey(true"), 2)
-        self.assertIn('<span class="kit-ver">', js)
-        css = open(os.path.join(self.out, "assets", "app.css"), encoding="utf-8").read()
-        self.assertIn(".conf-legend .kit-ver", css)
+        self.assertNotIn("{{KIT_VERSION_LINE}}", js)
+        legend = js.split("function confKey", 1)[1].split("function yearsLabel", 1)[0]
+        self.assertNotIn("kitVersionLine", legend)
+        self.assertNotIn("kit-version", legend)
+        self.assertEqual(js.count("confKey(true)"), 2)
 
 
 class KitVersionLine(unittest.TestCase):
-    """Formatter only: fictional version and dates, no tree data."""
+    """Formatter only: a fictional version, no tree data."""
 
-    def test_short_us_date_has_no_leading_zeros(self):
-        self.assertEqual(
-            build.kit_version_line(dt.datetime(2026, 11, 6, 23, 4), version="9.8.7"),
-            "v9.8.7 11/6/26")
-        self.assertEqual(
-            build.kit_version_line(dt.date(2026, 1, 5), version="v9.8.7"),
-            "v9.8.7 1/5/26")
-        self.assertNotIn("updated", build.kit_version_line(dt.datetime(2026, 11, 6), version="9.8.7").lower())
+    def test_version_token_has_no_date_or_product_name(self):
+        self.assertEqual(build.kit_version_line(version="9.8.7"), "v9.8.7")
+        self.assertEqual(build.kit_version_line(version="v9.8.7"), "v9.8.7")
+        self.assertNotIn("updated", build.kit_version_line(version="9.8.7").lower())
 
     def test_version_file_is_the_source(self):
         recorded = open(os.path.join(os.path.dirname(SITE), "VERSION"), encoding="utf-8").read().strip()
         self.assertEqual(build.kit_version(), recorded[1:] if recorded[:1] in "vV" else recorded)
-        line = build.kit_version_line(dt.datetime(2026, 11, 6, 12, 0))
-        self.assertTrue(line.startswith("v" + build.kit_version() + " "))
-        self.assertTrue(line.endswith(" 11/6/26"))
+        self.assertEqual(build.kit_version_line(), "v" + build.kit_version())
 
 
 class CollapseErrors(unittest.TestCase):

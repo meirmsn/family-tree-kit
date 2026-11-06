@@ -1,7 +1,8 @@
 # Changelog
 
 ## Unreleased
-- The person panel's **How to read** legend ends with one small muted line: the kit version and the build date, for example `v0.2.17 11/6/26`. Month and day have no leading zeros. There is no product name. The version is read from `VERSION` when the site is built; the date is the builder's local date. Forks that replace the panel keep the line by calling `kitVersionLine()` or by leaving the `{{KIT_VERSION_LINE}}` placeholder in their markup. `VERSION` is unchanged.
+- The site footer starts with the kit version, then the existing last-updated date: `v0.2.17 · Last updated 6 Nov 2026`. The version is read from `VERSION` when the site is built. The date keeps the footer's own format. Forks that replace the footer keep it with `kitVersionLine()` or the `{{KIT_VERSION_LINE}}` placeholder. `VERSION` is unchanged.
+- The footer prompt that said **Use as an app** now says **Save for offline use**. Its help text says the control saves the site on the device for offline viewing, and that adding it to the home screen makes it open like an app.
 
 
 ## v0.2.17 (2026-11-06)

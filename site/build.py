@@ -1221,16 +1221,14 @@ def kit_version(version=None):
     return version
 
 
-def kit_version_line(when=None, version=None):
-    """Kit version and build date for the How to read legend, e.g. 'v0.2.17 11/6/26'.
+def kit_version_line(version=None):
+    """Version token for the site footer, e.g. 'v0.2.17'. No product name.
 
-    The version comes from the kit VERSION file. The date is the build date in the
-    builder's local time: month/day/two-digit year, with no leading zeros on the
-    month or day. No product name.
+    The footer places this before its existing "Last updated" date. The date stays
+    in that sentence's own format; this token is only the version.
     """
-    when = when or dt.datetime.now()
-    line = f"v{kit_version(version)} {when.month}/{when.day}/{when:%y}"
-    if not re.fullmatch(r"v\d+(?:\.\d+)* \d{1,2}/\d{1,2}/\d{2}", line):
+    line = f"v{kit_version(version)}"
+    if not re.fullmatch(r"v\d+(?:\.\d+)*", line):
         raise SystemExit("kit version line is not in the expected form")
     return line
 
@@ -1342,7 +1340,7 @@ def build():
         src = os.path.join(WEB, n)
         dst = os.path.join(OUT, "assets", n)
         if n == "app.js":
-            # {{KIT_VERSION_LINE}} is the hook forks keep when they replace the panel.
+            # {{KIT_VERSION_LINE}} is the hook forks keep when they replace the footer.
             text = open(src, encoding="utf-8").read().replace("{{KIT_VERSION_LINE}}", kit_line)
             if "{{KIT_VERSION_LINE}}" in text:
                 raise SystemExit("unreplaced kit version placeholder in app.js")

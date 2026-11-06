@@ -8,7 +8,6 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
-<meta name="kit-version-line" content="{{KIT_VERSION_LINE}}">
 <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
 <title>{{SITE_TITLE}}</title>
@@ -113,13 +112,14 @@
 </main>
 
 <footer class="foot">
-  <p>Last updated <time datetime="{{LAST_UPDATED_ISO}}">{{LAST_UPDATED}}</time> · Private family page — please do not share.</p>
+  <p><span id="kit-version">{{KIT_VERSION_LINE}}</span> · Last updated <time datetime="{{LAST_UPDATED_ISO}}">{{LAST_UPDATED}}</time> · Private family page — please do not share.</p>
   <p class="muted small" id="privacy-rule"></p>
-  <section class="app-box" id="app-box" aria-label="Use as an app" hidden>
-    <p class="app-h">Use as an app</p>
-    <button type="button" class="btn sm" id="app-install" hidden>Install app</button>
-    <p class="small" id="app-ios" hidden>iPhone/iPad: open this page in <b>Safari</b>, tap <b>Share</b> <span aria-hidden="true">(□↑)</span> → <b>Add to Home Screen</b> → <b>Add</b>. The first time you open the app you may need to sign in again.</p>
-    <p class="small" id="app-installed" hidden>Running as an installed app.</p>
+  <section class="app-box" id="app-box" aria-label="Save for offline use" hidden>
+    <p class="app-h">Save for offline use</p>
+    <p class="small" id="app-help">Saves this site on the device for offline viewing. Add it to the home screen and it opens like an app.</p>
+    <button type="button" class="btn sm" id="app-install" hidden>Add to home screen</button>
+    <p class="small" id="app-ios" hidden>iPhone/iPad: open this page in <b>Safari</b>, tap <b>Share</b> <span aria-hidden="true">(□↑)</span> → <b>Add to Home Screen</b> → <b>Add</b>. That saves the site for offline viewing, and it opens like an app. The first time you open it you may need to sign in again.</p>
+    <p class="small" id="app-installed" hidden>Saved on this device for offline viewing. It opens like an app from the home screen.</p>
     <span class="app-off"><button type="button" class="btn ghost sm" id="app-offline" hidden></button>
     <span class="small muted" id="app-offline-status" aria-live="polite"></span></span>
   </section>

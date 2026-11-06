@@ -50,22 +50,20 @@
     if (!list) return "";
     return list.map((p, i) => (i ? `<span class="sep">${esc(p.j !== undefined ? p.j : "; ")}</span>` : "") + claim(p.t, p.c, p.s, withTags)).join("");
   }
-  // Kit version and local build date. build.py fills KIT_VERSION_LINE (double braces)
-  // from the VERSION file and the builder's local clock. Forks that replace this
-  // panel keep the line by calling kitVersionLine().
+  // Footer version token. build.py fills KIT_VERSION_LINE (double braces) from the
+  // VERSION file. The stock footer prints it before "Last updated". Forks that
+  // replace the footer keep it by calling kitVersionLine() or leaving the placeholder.
   function kitVersionLine() {
     let text = "{{KIT_VERSION_LINE}}";
     if (text.indexOf("{{") >= 0) {
-      const meta = document.querySelector('meta[name="kit-version-line"]');
-      text = (meta && meta.getAttribute("content")) || "";
+      const el = document.querySelector("#kit-version");
+      text = (el && el.textContent) || "";
     }
     if (!text || text.indexOf("{{") >= 0) return "";
-    return `<span class="kit-ver">${esc(text)}</span>`;
+    return `<span id="kit-version">${esc(text)}</span>`;
   }
-  function confKey(compact, opts) {
+  function confKey(compact) {
     // Color the label words themselves (no sample dates — those looked like real values).
-    // The version line is on by default so a replaced panel that still calls confKey keeps it.
-    const versionHtml = opts && opts.version === false ? "" : kitVersionLine();
     const k = (c, label) => `<span class="ck" title="${esc(CONF[c])} — ${esc(CONF_HELP[c])}">${cfSpan(label, c, { noSr: true })}</span>`;
     const lore = `<span class="ck" title="${esc(CONF.lore)} — ${esc(CONF_HELP.lore)}">` +
       `<span class="cf cf-lore" title="${esc(CONF.lore)} — ${esc(CONF_HELP.lore)}">` +
@@ -74,8 +72,7 @@
       `<span class="ck-h">How to read values:</span>` +
       `<span class="ck" title="${esc(CONF.confirmed)} — ${esc(CONF_HELP.confirmed)}">${cfSpan("confirmed", "confirmed", { noSr: true })}<small> (plain)</small></span>` +
       k("probable", "probable") + k("possible", "possible") + lore +
-      `<span class="ck ck-src"><span class="stag-demo">S11</span><small>source</small></span>` +
-      versionHtml + `</div>`;
+      `<span class="ck ck-src"><span class="stag-demo">S11</span><small>source</small></span></div>`;
   }
 
   function yearsLabel(p) {
@@ -235,7 +232,7 @@
         `<span class="k" title="${esc(CONF_HELP[c])}"><i class="sw" style="background:var(--c-${c})"></i>${CONF[c]}</span>`).join("") +
         `<span class="k"><i class="sw" style="background:var(--c-unknown)"></i>Not yet found</span>`;
     }
-    $("#table-key").innerHTML = confKey(true, { version: false });
+    $("#table-key").innerHTML = confKey(true);
   }
 
   /* ---------------- tooltip ---------------- */

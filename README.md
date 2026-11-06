@@ -245,11 +245,12 @@ python3 -m unittest discover -s site/tests
 python3 -m unittest discover -s tools/tests
 ```
 
-### Install the private site as an app (PWA)
+### Save the private site for offline use (PWA)
 
-Once you have published a tree behind your login, open the URL on phone or desktop, use the
-browser’s **Add to Home Screen** / **Install**, and you get a standalone Family Tree app with the
-circular fan icon. The generator ships the manifest, service worker and icons.
+Once you have published a tree behind your login, open the URL on phone or desktop. The footer
+offers **Save for offline use**, which keeps the site on the device for offline viewing. Add it
+to the home screen (the browser’s **Add to Home Screen** / **Install**) and it opens like an app,
+with the circular fan icon. The generator ships the manifest, service worker and icons.
 
 ## License
 
