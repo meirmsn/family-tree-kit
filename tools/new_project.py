@@ -51,6 +51,11 @@ LINES = {{"root": "Home person", "paternal": "Paternal", "maternal": "Maternal",
 FIELDS = {{}}
 OPEN_QUESTIONS = []
 ARCHIVE_REQUESTS = []
+# Title spelling: record spelling wins; family spelling in parentheses. See site/SPEC.md.
+NAME_FORMS = {{}}
+POSSIBLE_MATCHES = []
+MATCH_EXCLUSIONS = []
+CANONICAL_ALIASES = {{}}
 '''
 
 

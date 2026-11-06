@@ -110,6 +110,18 @@ When you record any person — home person, ancestor, or collateral — record *
 - On the site, **every person's page lists all known siblings**, whether the person is on the fan chart or off it. The fan itself still shows only direct ancestors. Two people already on the chart who are siblings are encoded with shared parents or `FAMILY_ASSERTIONS`, not by duplicating either as an off-chart relative.
 - `tools/check_ids.py --spec` and the site build warn when the files name a sibling or a child of a couple who is not encoded as a linked person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than the data records.
 
+### 2.9 Name spelling and possible matches
+
+The **title** is the spelling on the earliest or most official record. A civil or church birth, marriage, or death act outranks an index, a transcription, and a secondary source. When two official records disagree, use the earlier spelling as the title and keep the other one.
+
+If the family gave a different spelling, write the title as `Record Spelling (Family Spelling)`. Family spellings are often phonetic — heard, not seen — so they never replace a record. Keep them in the parentheses and as a search hint. If no record exists yet, the family spelling is the title.
+
+Every other documented spelling is listed on the panel under **Also recorded as**, each with the source that spells it that way.
+
+A second record that might be the same person (a different spelling, or the same spelling in another entry) stays a **separate person**. The panel says **Possible match**. Do not merge the two into one person unless the user explicitly says they are the same. A merge is an entry in `CANONICAL_ALIASES` (alias id → canonical id), written only after that yes. `POSSIBLE_MATCHES` is the unmerged candidate. `MATCH_EXCLUSIONS` is a pair the user has decided is not the same person.
+
+Record it in `NAME_FORMS` on the spec: `record`, `record_source`, optional `record_kind` and `record_year`, `family`, optional `family_source`, and `aliases` (each `name` with a `source`). Schema and the warnings: `site/SPEC.md`. `tools/check_ids.py --spec` and the site build warn when the title does not follow a cited record spelling, when an alias has no source, and when two people share a near-identical name and close birth years with no possible-match or exclusion entry. The check does not merge anyone.
+
 ---
 
 ## 3. The iterative recursive search loop

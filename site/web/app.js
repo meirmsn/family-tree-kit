@@ -239,6 +239,10 @@
         <div class="tt-foot"><span class="chip c-${r.link.c}">${esc(CONF[r.link.c])} link</span><span class="muted">Click to open the main entry</span></div>`;
     }
     const aka = p.f && p.f.aka ? `<div class="tt-aka">${parts(p.f.aka, false)}</div>` : "";
+    const also = (p.alsoRecorded || []).length
+      ? `<div class="tt-aka">Also recorded as ${esc(p.alsoRecorded.map((r) => r.name).join("; "))}</div>` : "";
+    const maybe = (p.possibleMatches || []).length
+      ? `<div class="tt-aka">Possible match: ${esc(p.possibleMatches.map((m) => m.name || m.id).join("; "))}</div>` : "";
     const rel = p.gen === 0 ? "Home person" : p.relation;
     let body;
     if (p.nameOnly) body = `<div class="tt-priv">Name only — dates and places are kept private.</div>`;
@@ -246,7 +250,7 @@
       body = `<dl><dt>Born</dt><dd>${parts(p.f.born, true)}</dd><dt>Died</dt><dd>${parts(p.f.died, true)}</dd></dl>`;
       if (p.note) body += `<p class="tt-note">${esc(p.note)}</p>`;
     }
-    return `<div class="tt-name">${esc(p.name)}</div>${aka}
+    return `<div class="tt-name">${esc(p.name)}</div>${aka}${also}${maybe}
       <div class="tt-rel">${esc(rel)}${p.gen > 1 ? `<span> · ${esc(p.path)}</span>` : ""}</div>
       ${body}
       <div class="tt-foot"><span class="chip c-${baseConf(p.conf)}">${esc(CONF[baseConf(p.conf)] || p.conf)}</span><span class="muted">Click for details &amp; sources</span></div>`;
@@ -357,6 +361,26 @@
   }
   // One sibling block for chart people and off-chart relatives. Confidence is the
   // edge's evidence, not the destination person's identity confidence.
+  function recordedAs(p) {
+    const rows = p.alsoRecorded || [];
+    if (!rows.length) return "";
+    const bits = rows.map((r) => `${esc(r.name)}${tags(r.s || [])}`).join('<span class="sep">; </span>');
+    return `<div class="p-aka"><span class="lbl">Also recorded as</span> ${bits}</div>`;
+  }
+  function possibleMatch(p) {
+    const rows = p.possibleMatches || [];
+    if (!rows.length) return "";
+    return rows.map((m) => {
+      const dest = m.id && (BY.get(m.id) || REL[m.id]);
+      const name = dest ? dest.name : (m.name || m.id || "");
+      const who = dest
+        ? `<button type="button" class="plink" data-goto="${esc(m.id)}">${esc(name)}</button>`
+        : esc(name);
+      const note = m.note ? ` <span class="muted">${esc(m.note)}</span>` : "";
+      return `<div class="p-aka p-match"><span class="lbl">Possible match</span> ${who}${note}${tags(m.s || [])}</div>`;
+    }).join("");
+  }
+
   function siblingsSection(q) {
     const rows = (q.siblings || []).map((e) => {
       const dest = BY.get(e.id) || REL[e.id];
@@ -519,6 +543,8 @@
       <h3 id="panel-name" tabindex="-1">${esc(p.name)}</h3>
       ${p.gen > 1 ? `<div class="p-path">${esc(p.path)}</div>` : ""}`;
     const body = `
+      ${recordedAs(p)}
+      ${possibleMatch(p)}
       ${p.f && p.f.aka ? `<div class="p-aka"><span class="lbl">Also known as</span> ${parts(p.f.aka, true)}</div>` : ""}
       <div class="chips">
         <span class="chip c-${baseConf(p.conf)}" title="${esc(CONF_HELP[baseConf(p.conf)] || "")}">${esc(CONF[baseConf(p.conf)] || p.conf)}</span>
@@ -535,17 +561,21 @@
   }
 
   function relView(q) {
-    const a0 = q.anchors[0], anchor = BY.get(a0.id);
+    const a0 = (q.anchors && q.anchors[0]) || { id: "", rel: "Possible match" };
+    const anchor = a0.id ? BY.get(a0.id) : null;
     const head = `<div class="p-rel">Other family · not on the chart</div>
       <h3 id="panel-name" tabindex="-1">${esc(q.name)}</h3>
-      <div class="p-path">${esc(a0.rel)} · ${esc(anchor.name)}</div>`;
-    const links = q.anchors.map((a) => {
+      <div class="p-path">${esc(a0.rel || "Relative")}${anchor ? ` · ${esc(anchor.name)}` : ""}</div>`;
+    const links = (q.anchors || []).map((a) => {
       const t = BY.get(a.id);
+      if (!t) return "";
       return `<li><span class="lbl">${esc(a.rel.split(/[;(]/)[0].trim())} of</span>
         <button class="rel" data-goto="${esc(a.id)}" aria-label="${esc(a.rel)} of ${esc(t.name)}. Open">
           ${cfSpan(t.name, t.conf)}<span class="yrs">${esc(yearsLabel(t))}</span></button></li>`;
     }).join("");
     const body = `
+      ${recordedAs(q)}
+      ${possibleMatch(q)}
       <div class="chips"><span class="chip c-${baseConf(q.conf)}" title="${esc(CONF_HELP[baseConf(q.conf)] || "")}">${esc(CONF[baseConf(q.conf)] || q.conf)}</span>
         <span class="chip offc">Not on the chart</span>${q.note ? "" : tags(q.s)}</div>
       ${q.nameOnly ? `<div class="priv">${lockSvg}Shown by name only: may be living, so dates and places are kept private.</div>` : ""}
@@ -701,7 +731,11 @@
       });
       tr.addEventListener("keydown", (e) => { if (e.key === "Enter") openPanel(p.id, "table"); });
       const aka = p.f && p.f.aka ? p.f.aka.map((x) => x.t).join(" ") : "";
-      const hay = [p.name, aka, p.relation, p.born, p.died, p.places, p.note, p.lineLabel, CONF[baseConf(p.conf)],
+      const spellings = []
+        .concat((p.alsoRecorded || []).map((r) => r.name), p.soundsLike || [],
+          (p.possibleMatches || []).map((m) => m.name || ""))
+        .filter(Boolean).join(" ");
+      const hay = [p.name, aka, spellings, p.relation, p.born, p.died, p.places, p.note, p.lineLabel, CONF[baseConf(p.conf)],
         ...p.sources.map((s) => s + " " + (SRC[s] ? SRC[s].title : ""))].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         .replace(/ł/g, "l");
       return { p, tr, hay };

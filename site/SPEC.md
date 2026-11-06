@@ -21,7 +21,10 @@ mismatch.
 | `OTHER_FAMILY` | dict | fan id → `[(group, relative key, relationship label)]`; optional 4th slot `"conf\|S1"` or `{c, s, label}` is that link's evidence |
 | `FAMILY_ASSERTIONS` | list | optional edges that are not the fan `child` pointer: parent, sibling, half-sibling (see below) |
 | `SIBLING_EXCLUSIONS` | list | optional unordered id pairs that must not be shown as siblings |
-| `CANONICAL_ALIASES` | dict | optional alias id → canonical id, applied before sibling linking |
+| `CANONICAL_ALIASES` | dict | optional alias id → canonical id, applied before sibling linking. This is a **merge**, written only after the user says the two records are one person |
+| `NAME_FORMS` | dict | per id: record spelling + source, family spelling, other spellings with sources (see below) |
+| `POSSIBLE_MATCHES` | list | unmerged same-person candidates; the panel says **Possible match** |
+| `MATCH_EXCLUSIONS` | list | unordered pairs that are not the same person |
 | `GAZETTEER`, `PLACE_ALIASES` | set, dict | search places; aliases keyed by folded spelling (lower case, no accents, ł→l) |
 | `SOURCE_TITLES` | dict | hand-written titles where the parse of sources.md is messy |
 | `UNLINKED_SOURCES` | list | sources shown although nobody cites them |
@@ -44,6 +47,52 @@ The list is built after `build_people` / `build_relatives`, without moving anyon
 - `SIBLING_EXCLUSIONS`: pairs that must not be siblings. `CANONICAL_ALIASES`: alias id → canonical id, applied before linking. Neither is guessed from names or notes.
 
 `tools/check_ids.py --spec` and the site build warn when a sibling or a child of a couple named in the research files or the spec is not encoded as a linked person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than those records. Excluded and aliased pairs are not missing siblings.
+
+## Name spelling
+
+The title is the spelling on the earliest or most official record. A civil or church birth, marriage, or death act outranks an index, a transcription, and a secondary source. When two official records disagree, the earlier one is the title.
+
+If the family gave a different spelling, the title is `Record Spelling (Family Spelling)`. Family spellings are often phonetic (heard, not seen). They never replace a record. They stay in the parentheses and are indexed as sounds-like search hints. If no record exists yet, the family spelling is the title.
+
+Every other documented spelling is listed under **Also recorded as**, each with its source. Nicknames stay in `AKA`. `NAME_FORMS` is optional: with no entry, `name` is the title, as before.
+
+```python
+NAME_FORMS = {
+    "p9": {
+        "record": "Lena Marrow",          # spelling used for the title
+        "record_source": "S2",            # required
+        "record_kind": "act",             # optional: act, record, gravestone, index, transcription, secondary, family
+        "record_year": 1921,              # optional; the earlier official record wins when spellings differ
+        "family": "Lina",                 # shown in parentheses; also a search hint
+        "family_source": "U1",            # optional
+        "aliases": [                      # every other documented spelling
+            {"name": "Liena Marrow", "source": "S2", "kind": "act", "year": 1921},
+        ],
+    },
+}
+```
+
+`record_kind` may be omitted. The check reads the source text when it clearly says act, register, index, transcription, gravestone, or passenger list. A U-number is family testimony.
+
+A suspected same person stays two people until the user says otherwise:
+
+```python
+POSSIBLE_MATCHES = [
+    {"a": "p18", "b": "natan-index", "sources": ["S9", "S10"], "note": "Index row; not merged"},
+]
+MATCH_EXCLUSIONS = [("p-a", "p-b")]   # or {"a", "b"}; the user decided these are not the same person
+```
+
+`CANONICAL_ALIASES` is the merge (`alias id → canonical id`). Nothing copies a possible match into that map. The check does not merge anyone.
+
+`tools/check_ids.py --spec` and the site build warn when:
+
+- the written title differs from the cited record spelling and the family spelling is not what accounts for the difference;
+- a record spelling or an alias has no source, or cites an unknown source;
+- the `record` spelling is outranked by another cited spelling (an act over an index, or an earlier official record) — the warning names the spelling the title should use;
+- two people share a near-identical name (the same name, or one edit on the given name or the surname — not a shared surname alone) and birth years within 8 years, and the pair is not a possible match, an exclusion, a canonical alias, or a parent and child.
+
+Missing birth years do not warn. One-token names do not warn. Projects with no `NAME_FORMS` do not get title warnings.
 > `check_ids.py --spec` and the build warn (not fail) when `OTHER_FAMILY`/`RELATIVES` are empty or
 > much thinner than siblings/children named in notes or `people.md`, and when a `note=` or a
 > record sidecar's **Why this record matters** / Notes / Summary contains process stems

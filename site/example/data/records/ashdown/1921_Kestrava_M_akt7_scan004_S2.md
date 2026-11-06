@@ -45,4 +45,4 @@ No. 7. Kestrava, 12 June 1921. Jakob Ashdown, weaver, 25, of Kestrava, and Lena 
 
 ## Notes / discrepancies
 
-Rachel's maiden name is not given.
+Rachel's maiden name is not given. One line of this act writes the bride as Liena Marrow; the body of the act says Lena Marrow.

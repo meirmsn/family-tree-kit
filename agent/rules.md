@@ -58,3 +58,15 @@ These are the non-negotiables. Every worker brief repeats them. METHODOLOGY.md ย
     migration or build process, and never agent/research bookkeeping (`parent agent`, `the user`,
     `Pass N`, message ids, `relayed by`, `headed browser`, `sidecar`, `worker brief`).
 
+17. **Name spelling.** The title uses the spelling on the earliest or most official record
+    (a civil or church birth, marriage, or death act outranks an index, a transcription, or a
+    secondary source). If the family gave a different spelling, the title is
+    `Record Spelling (Family Spelling)`. Family spellings are often phonetic; they never replace
+    a record, and they stay as search hints. If no record exists yet, the family spelling is the
+    title. Every other documented spelling is listed under **Also recorded as**, each with its
+    source. A suspected same person is a **possible match** and is not merged unless the user
+    explicitly says so. Record this in `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS`
+    (`METHODOLOGY.md` ยง2.9, `site/SPEC.md`). `check_ids.py --spec` warns when the title disagrees
+    with a cited record spelling, when an alias has no source, and when two people share a
+    near-identical name and close birth years with no possible-match or exclusion entry.
+

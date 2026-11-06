@@ -32,7 +32,10 @@ Checks
   people.md (see docs/research-process-lessons.md §9 and tools/gklib.py). Sibling coverage (warnings):
   a sibling or child of a couple named in the research files or the spec is not encoded as a linked
   person; a sibling link is not reciprocal; a person's panel would show fewer siblings than the
-  data records (tools/siblings.py).
+  data records (tools/siblings.py). Name spelling (warnings, tools/names.py): a title differs
+  from a cited record spelling without the family spelling marked; an alias or record
+  spelling lacks a source; two people share a near-identical name and birth years within
+  8 years with no possible-match or exclusion entry. Nothing is merged automatically.
 Exit code 1 if any ERROR (with --strict, warnings count too).
 """
 import argparse
@@ -46,6 +49,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gklib import (DERIVED, ID_RE, TRANSLATION_STATUSES, UNUSED_LINE, body_sections, declared_unused,  # noqa: E402
                    enclosing_project, front_matter, is_placeholder, num, other_family_warnings,
                    process_note_warnings, process_sidecar_warnings, process_source_text_warnings, project_files, read, sidecars, sibling_coverage_warnings, source_entries, strip_comments)
+from names import spec_name_warnings  # noqa: E402
 
 
 
@@ -165,6 +169,17 @@ def check_spec(path, defined, errors, warns, info, people_md="", project=None):
             aliases=getattr(spec, "CANONICAL_ALIASES", {}),
             fields=getattr(spec, "FIELDS", {}), known_sources=known,
             collateral_texts=collateral_texts):
+        warns.append(w)
+    sources_md = ""
+    if project and os.path.isfile(os.path.join(project, "sources.md")):
+        sources_md = read(os.path.join(project, "sources.md"))
+    for w in spec_name_warnings(
+            spec.PEOPLE, relatives, getattr(spec, "NAME_FORMS", {}) or {},
+            getattr(spec, "POSSIBLE_MATCHES", []) or [],
+            getattr(spec, "MATCH_EXCLUSIONS", []) or [],
+            getattr(spec, "CANONICAL_ALIASES", {}) or {},
+            sources_md=sources_md, pseudo_sources=getattr(spec, "PSEUDO_SOURCES", {}) or {},
+            known_sources=known):
         warns.append(w)
 
 

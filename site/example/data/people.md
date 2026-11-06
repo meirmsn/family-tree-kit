@@ -85,5 +85,10 @@ All people here are invented. Append-only: corrections go in a new pass section.
   ancestors twice, through Lena on the Ashdown line and through Dora on the Corvell line).
 - P16's estimated birth moves to c. 1855 (a daughter born c. 1880).
 
+## Pass 4 (fictional, 2026-11-06; name spellings; append-only)
+- P9: the 1921 marriage act (S2) spells her Lena Marrow; one line of the same act writes Liena. The family says Lina (U1). The title uses Lena Marrow, with Lina in parentheses. Liena is another recorded spelling.
+- P11: the 1952 index (S5) spells the mother Clara W[?]. The family says Clara Wendt (U2). The index spelling is the title; Wendt stays in parentheses and does not replace the record.
+- P18: the Kestrava birth index (S10) names a Natan Corvell, 1874. Possible match only; not merged with the Natan on the gravestone (S9).
+
 ## Evidence map (derived; regenerated each pass; tools ignore this section)
 - P4: S1, S4, S5 · P8: S1, S2, S3 · P9: S1, S2, S3 · P12: S7, S9, S12 · P16: S2, S11, S13 · P19: S12, S13

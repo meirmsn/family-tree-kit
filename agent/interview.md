@@ -8,7 +8,9 @@ whenever they are easy to mix up.
 - Add the fact to `people.md` under the person's `## P<n>` section, labelled **lore**, with a new
   **U-number** in `sources.md` (`- U3 — **Information from <speaker>, relayed by <user>, YYYY-MM-DD HH:MM** — firsthand/secondhand`).
 - New person → next free P-number (`tools/next_id.py`). Never renumber.
-- Keep spellings exactly as given, plus every variant. Write "[?]" where the user is unsure.
+- Keep spellings exactly as given, plus every variant. A family spelling is often phonetic
+  (heard, not seen): keep it, and do not let it replace a record spelling. Write "[?]" where the
+  user is unsure.
 - Corrections are new U-entries; a retracted item is marked **RETRACTED (time)**, not deleted.
 
 ## Order of questions
