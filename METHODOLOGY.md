@@ -261,4 +261,4 @@ The research files are the single source of truth. The site is **generated** fro
 
 ## See also
 
-- [docs/research-process-lessons.md](docs/research-process-lessons.md): generic process lessons (v0.2.1).
+- [docs/research-process-lessons.md](docs/research-process-lessons.md): generic process lessons (v0.2.12; includes §9 record-every-relationship).

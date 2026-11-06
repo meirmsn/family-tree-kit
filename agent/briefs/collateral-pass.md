@@ -14,3 +14,8 @@ Rules (also in `templates/collateral/README.md`):
 6. Living collateral relatives: records only.
 
 Report: the evidence for each proposed promotion, in one short table (claim, records, labels).
+
+7. After capturing collateral people, add them to the site spec's `RELATIVES` and wire them from the
+   relevant fan person in `OTHER_FAMILY` (Siblings / Other children / …) so panels show them.
+   `check_ids.py --spec` warns when those maps look empty relative to what notes and records name.
+

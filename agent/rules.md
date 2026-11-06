@@ -43,3 +43,12 @@ These are the non-negotiables. Every worker brief repeats them. METHODOLOGY.md �
     a 0-scan catalogue unit is an archive request, not a negative; declare online exhaustion with a
     written summary before drafting archive letters.
 
+16. **Record every relationship a record shows.** Not just the direct line: other children of the
+    same parents, half-siblings, a spouse's parents, and witnesses or informants identified as
+    relatives. Each gets a person entry (with a confidence label and the record's link); index-only
+    hits stay leads; living or recent people stay name-only. Put them on the site via
+    `OTHER_FAMILY` / `RELATIVES` so siblings and other children appear in panels
+    (`docs/research-process-lessons.md` §9). Person `note=` text and record **Why this record
+    matters** / Notes / Summary describe only the person or record — never migration or build
+    process.
+

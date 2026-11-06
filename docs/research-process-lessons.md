@@ -1,4 +1,4 @@
-# Research process lessons (v0.2.1)
+# Research process lessons (v0.2.12)
 
 Generic, family-neutral process rules learned from running long research projects.
 They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow the stricter rule.
@@ -44,3 +44,20 @@ They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow th
 ## 8. Propose before changing links or confidence
 - The agent **never** adds, removes or changes a family relationship link, or raises or lowers a confidence label, on its own.
 - It writes the change as a proposal (what, why, cited sources) and applies it only after the user approves. Downgrading facts that lack links during an audit is also proposed first, unless the user has given standing approval.
+
+## 9. Record every relationship a record shows
+- Whenever a birth, death or marriage record — or a testimony — is pulled up, capture **everyone**
+  it ties to the family, not just the direct line: other children of the same parents, half-siblings,
+  a spouse's parents, and witnesses or informants identified as relatives.
+- Each gets their own person entry (P- or C-number, or a `RELATIVES` key for the site) with a
+  confidence label and the record's source link. Index-only hits stay **leads**. Living or recent
+  people stay **name-only** on the site.
+- Surface them on the private site through `OTHER_FAMILY` / `RELATIVES` so `derive_other_family` can
+  show siblings and other children on person panels. A direct-line-only migration that leaves
+  `OTHER_FAMILY` empty will publish a site with no siblings even when the records named them.
+- `tools/check_ids.py --spec` (and the site build) warn when `OTHER_FAMILY` / `RELATIVES` look empty
+  or much thinner than siblings/children named in notes or `people.md`.
+- Person summaries (`note=` on PEOPLE / RELATIVES) and site-facing record sections (**Why this
+  record matters**, Notes / discrepancies, Summary) describe only the person or record — never
+  migration, cloning, snapshots, kit or build process. The same tools warn on those process stems.
+
