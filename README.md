@@ -228,7 +228,7 @@ Once you have published a tree behind your login, open the URL on phone or deskt
 browser’s **Add to Home Screen** / **Install**, and you get a standalone Family Tree app with the
 circular fan icon. The generator ships the manifest, service worker and icons.
 
-## Licence
+## License
 
 MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
 D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
@@ -238,7 +238,7 @@ Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTIC
 
 This kit stands on the shoulders of giants. With real gratitude to the people who built and maintain the work it relies on:
 
-- **[D3](https://d3js.org/)** ([GitHub](https://github.com/d3/d3)) — the heart of the circular fan chart (`site/web/fan.js`: hierarchy, partition, arc, zoom, colour interpolation). D3 was created by [Mike Bostock](https://bost.ocks.org/mike/) and is maintained with [Philippe Rivière](https://github.com/Fil) and [many contributors](https://github.com/d3/d3/graphs/contributors). Thank you — the chart simply would not exist without it. ISC licence; copied into each build's `vendor/`.
+- **[D3](https://d3js.org/)** ([GitHub](https://github.com/d3/d3)) — the heart of the circular fan chart (`site/web/fan.js`: hierarchy, partition, arc, zoom, colour interpolation). D3 was created by [Mike Bostock](https://bost.ocks.org/mike/) and is maintained with [Philippe Rivière](https://github.com/Fil) and [many contributors](https://github.com/d3/d3/graphs/contributors). Thank you — the chart simply would not exist without it. ISC license; copied into each build's `vendor/`.
 - **[webtrees fan chart](https://github.com/magicsunday/webtrees-fan-chart)** by [Rico Sonntag (magicsunday)](https://github.com/magicsunday), a module for [webtrees](https://webtrees.net/) — the inspiration for our fan chart's look and layout (already noted in `fan.js` and the site footer). Our `fan.js` is written from scratch, but the idea came from this lovely project.
 - **[Fuse.js](https://www.fusejs.io/)** ([GitHub](https://github.com/krisk/Fuse)) by Kiro Risk and contributors — fuzzy search over people, places and records (`site/web/search.js`). Apache-2.0; copied into `vendor/`.
 - **[Pillow](https://python-pillow.org/)** ([GitHub](https://github.com/python-pillow/Pillow)), the friendly PIL fork by Jeffrey A. Clark and contributors — record-image re-encoding, PWA icons and image helpers in `tools/`.
