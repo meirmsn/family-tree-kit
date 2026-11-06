@@ -42,7 +42,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gklib import (DERIVED, ID_RE, TRANSLATION_STATUSES, UNUSED_LINE, body_sections, declared_unused,  # noqa: E402
                    enclosing_project, front_matter, is_placeholder, num, other_family_warnings,
-                   process_note_warnings, process_sidecar_warnings, project_files, read, sidecars, source_entries, strip_comments)
+                   process_note_warnings, process_sidecar_warnings, process_source_text_warnings, project_files, read, sidecars, source_entries, strip_comments)
 
 
 
@@ -258,6 +258,8 @@ def main():
     if seen:
         info.append(f"sidecars: {len(seen)}; with a real transcription: {n_done}; status pending: {n_pending}")
     for w in process_sidecar_warnings(P):
+        warns.append(w)
+    for w in process_source_text_warnings(P):
         warns.append(w)
 
     if a.spec:

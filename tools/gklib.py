@@ -343,15 +343,30 @@ SIB_CHILD_MENTION_RE = re.compile(
 _OTHER_FAMILY_GROUPS = ("siblings", "other children")
 
 
+# Agent / research-conversation bookkeeping that must never appear in site-facing titles,
+# summaries or notes. Phrase-level (family-neutral): not bare "worker" / "agent" (those appear
+# in occupations and ordinary prose). "Pass N" = research-pass labels, not "passport".
+BOOKKEEPING_NOTE_RE = re.compile(
+    r"(?i)(?:\b(?:parent agents?|owner message|relayed by|the user(?:'s)?|headed browser|"
+    r"sidecars?|worker briefs?)\b|\[p?t\d+[us]\]|\b[Pp]ass\s+\d+\b)"
+)
+
+
 def _process_hits(label, text):
-    """Return warn strings for process stems found in text (empty if clean)."""
+    """Return warn strings for process / bookkeeping stems found in text (empty if clean)."""
     if not text:
         return []
+    out = []
     m = PROCESS_NOTE_RE.search(text)
-    if not m:
-        return []
-    return [f"{label}: process word {m.group(0)!r} — "
-            f"site-facing text should describe only the person or record, not migration/build process"]
+    if m:
+        out.append(f"{label}: process word {m.group(0)!r} — "
+                   f"site-facing text should describe only the person or record, not migration/build process")
+    m2 = BOOKKEEPING_NOTE_RE.search(text)
+    if m2:
+        out.append(f"{label}: bookkeeping phrase {m2.group(0)!r} — "
+                   f"site-facing titles, summaries and notes describe the record and the person, "
+                   f"never the research process or the agent conversation")
+    return out
 
 
 def process_note_warnings(people, relatives=None):
@@ -374,21 +389,35 @@ _PROCESS_SIDECAR_SECTIONS = (
 
 
 def process_sidecar_warnings(project):
-    """Warn when a record sidecar's site-facing sections contain process stems.
+    """Warn when a record sidecar's site-facing title or sections contain process stems.
 
-    Covers 'Why this record matters', Notes / discrepancies, and Summary — site-facing
-    fields that should describe only the record, not migration or build process. Uses the
-    same stems as process_note_warnings.
+    Covers front-matter title, 'Why this record matters', Notes / discrepancies, and Summary —
+    site-facing fields that should describe only the record, not migration, build process, or
+    agent/research bookkeeping. Uses the same stems as process_note_warnings.
     """
     out = []
-    for path, _fm in sidecars(project):
+    for path, fm in sidecars(project):
+        rel = os.path.relpath(path, project)
+        title = fm.get("title")
+        if title:
+            out.extend(_process_hits(f"{rel} title", str(title)))
         body = front_matter(read(path))[1]
         sec = body_sections(body)
-        rel = os.path.relpath(path, project)
         for heading in _PROCESS_SIDECAR_SECTIONS:
             if heading not in sec:
                 continue
             out.extend(_process_hits(f"{rel} §{heading}", sec[heading]))
+    return out
+
+
+def process_source_text_warnings(project):
+    """Warn when sources.md entries (site titles/summaries) contain process or bookkeeping stems."""
+    path = os.path.join(project, "sources.md")
+    if not os.path.isfile(path):
+        return []
+    out = []
+    for sid, e in source_entries(read(path)).items():
+        out.extend(_process_hits(f"sources.md {sid}", e.get("text") or ""))
     return out
 
 

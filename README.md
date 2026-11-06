@@ -146,6 +146,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 - **v0.2.2–v0.2.3** — safer draft renumbering; privacy whole-word + simple suffixes; `--strict` required before sharing.
 - **v0.2.10** — multi-layer privacy filters: `GENEALOGY_PRIVATE_WORDS`, pre-commit/pre-push hooks, name-blind `--public-ci`, public CI workflow.
 - **v0.2.12** — record every relationship a record shows; warn when `OTHER_FAMILY` / `RELATIVES` look empty; warn on process wording in person notes.
+- **v0.2.15** — process-word lint also flags agent bookkeeping in source titles, summaries and notes (`parent agent`, `the user`, `Pass N`, message ids, …).
 - **v0.2.14** — same process-word lint on record sidecars: "Why this record matters", Notes, Summary.
 
 ### Site and docs
