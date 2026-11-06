@@ -67,7 +67,7 @@ class UpgradeBuild(unittest.TestCase):
         self.assertIn("added NAME_FORMS = {}", out)
         self.assertIn("build: ok", out)
         self.assertIn("summary: ok", out)
-        self.assertEqual(read(os.path.join(project, "KIT_VERSION")).strip(), "0.2.18")
+        self.assertEqual(read(os.path.join(project, "KIT_VERSION")).strip(), "0.2.19")
         self.assertTrue(os.path.isfile(os.path.join(project, ".work", "site-build", "index.html")))
         backup_line = next(ln for ln in out.splitlines() if ln.startswith("backup: "))
         dst = backup_line.split("backup: ", 1)[1].split("  (", 1)[0]

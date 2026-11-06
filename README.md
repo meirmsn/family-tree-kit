@@ -170,6 +170,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 - **v0.2.14** — same process-word lint on record sidecars: "Why this record matters", Notes, Summary.
 
 ### Site and docs
+- **v0.2.19** — the footer shows the kit version before the last-updated date (`v0.2.19 · Last updated 6 Nov 2026`). The offline prompt says **Save for offline use**.
 - **v0.2.17** — person panels show `Record Spelling (Family Spelling)` when those differ, then **Also recorded as** (each spelling with its source) and **Possible match** for a candidate that is not merged.
 - **v0.2.16** — every person panel, on the chart and off it, lists all known siblings. Each link keeps its own confidence and sources. Fan positions stay the same.
 - **v0.2.4–v0.2.6** — README screenshots from the fictional example (including interactive panel, evidence and hover-tip shots).
@@ -251,11 +252,12 @@ python3 -m unittest discover -s tools/tests
 
 When the kit updates, run `python3 tools/upgrade.py <project>` (`--dry-run` shows what would run). It backs up the project inside that folder, applies any newer scripts in `migrations/`, writes `KIT_VERSION`, and runs `check_ids` and the site build. Don't hand-migrate.
 
-### Install the private site as an app (PWA)
+### Save the private site for offline use (PWA)
 
-Once you have published a tree behind your login, open the URL on phone or desktop, use the
-browser’s **Add to Home Screen** / **Install**, and you get a standalone Family Tree app with the
-circular fan icon. The generator ships the manifest, service worker and icons.
+Once you have published a tree behind your login, open the URL on phone or desktop. The footer
+offers **Save for offline use**, which keeps the site on the device for offline viewing. Add it
+to the home screen (the browser’s **Add to Home Screen** / **Install**) and it opens like an app,
+with the circular fan icon. The generator ships the manifest, service worker and icons.
 
 ## License
 

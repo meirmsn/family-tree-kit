@@ -1205,6 +1205,34 @@ def name_tokens():
     return toks
 
 
+def kit_version(version=None):
+    """Dotted kit version from the VERSION file, without a leading v."""
+    if version is None:
+        path = os.path.join(os.path.dirname(HERE), "VERSION")
+        try:
+            version = open(path, encoding="utf-8").read()
+        except OSError as e:
+            raise SystemExit(f"kit VERSION file is missing ({path})") from e
+    version = version.strip()
+    if version[:1] in ("v", "V"):
+        version = version[1:]
+    if not version or not re.fullmatch(r"\d+(?:\.\d+)*", version):
+        raise SystemExit("kit VERSION must be a dotted number such as 0.2.17")
+    return version
+
+
+def kit_version_line(version=None):
+    """Version token for the site footer, e.g. 'v0.2.19'. No product name.
+
+    The footer places this before its existing "Last updated" date. The date stays
+    in that sentence's own format; this token is only the version.
+    """
+    line = f"v{kit_version(version)}"
+    if not re.fullmatch(r"v\d+(?:\.\d+)*", line):
+        raise SystemExit("kit version line is not in the expected form")
+    return line
+
+
 def site_title():
     """<title>, header and app name. Never a surname (they show in tabs, history and home screens)."""
     title = CFG.get("site_title") or "Family tree"
@@ -1307,8 +1335,19 @@ def build():
         shutil.copy(src, dst)
     vendor(os.path.join(OUT, "vendor"))
     os.makedirs(os.path.join(OUT, "assets"), exist_ok=True)
+    kit_line = kit_version_line()
     for n in ("app.js", "app.css", "responsive.css", "fan.js", "viewer.js", "search.js", "favicon.svg"):
-        shutil.copy(os.path.join(WEB, n), os.path.join(OUT, "assets", n))
+        src = os.path.join(WEB, n)
+        dst = os.path.join(OUT, "assets", n)
+        if n == "app.js":
+            # {{KIT_VERSION_LINE}} is the hook forks keep when they replace the footer.
+            text = open(src, encoding="utf-8").read().replace("{{KIT_VERSION_LINE}}", kit_line)
+            if "{{KIT_VERSION_LINE}}" in text:
+                raise SystemExit("unreplaced kit version placeholder in app.js")
+            with open(dst, "w", encoding="utf-8") as f:
+                f.write(text)
+        else:
+            shutil.copy(src, dst)
     for n in ("pwa.js", "pwa.css"):
         shutil.copy(os.path.join(WEB, "pwa", n), os.path.join(OUT, "assets", n))
     html = open(os.path.join(WEB, "index.html"), encoding="utf-8").read()
@@ -1322,6 +1361,7 @@ def build():
     title, byline = site_title(), CFG.get("byline") or getattr(spec, "BYLINE", "")
     html = html.replace("{{SITE_TITLE}}", esc(title)).replace("{{BYLINE}}", esc(byline))
     html = html.replace("{{LAST_UPDATED}}", data["lastUpdated"]).replace("{{LAST_UPDATED_ISO}}", data["lastUpdatedISO"])
+    html = html.replace("{{KIT_VERSION_LINE}}", esc(kit_line))
     if "{{" in html:
         raise SystemExit("unreplaced template placeholder in index.html")
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:

@@ -50,6 +50,18 @@
     if (!list) return "";
     return list.map((p, i) => (i ? `<span class="sep">${esc(p.j !== undefined ? p.j : "; ")}</span>` : "") + claim(p.t, p.c, p.s, withTags)).join("");
   }
+  // Footer version token. build.py fills KIT_VERSION_LINE (double braces) from the
+  // VERSION file. The stock footer prints it before "Last updated". Forks that
+  // replace the footer keep it by calling kitVersionLine() or leaving the placeholder.
+  function kitVersionLine() {
+    let text = "{{KIT_VERSION_LINE}}";
+    if (text.indexOf("{{") >= 0) {
+      const el = document.querySelector("#kit-version");
+      text = (el && el.textContent) || "";
+    }
+    if (!text || text.indexOf("{{") >= 0) return "";
+    return `<span id="kit-version">${esc(text)}</span>`;
+  }
   function confKey(compact) {
     // Color the label words themselves (no sample dates — those looked like real values).
     const k = (c, label) => `<span class="ck" title="${esc(CONF[c])} — ${esc(CONF_HELP[c])}">${cfSpan(label, c, { noSr: true })}</span>`;

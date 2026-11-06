@@ -2,6 +2,12 @@
 
 Release checklist: if a release changes data shape, add a migration file under `migrations/`. Most releases have none. Migrations may only reshape data structures (add empty fields, rename keys, move entries). They must never change relationships, facts, or confidence levels, and never merge people.
 
+## v0.2.19 (2026-11-06)
+- The site footer starts with the kit version, then the existing last-updated date: `v0.2.19 · Last updated 6 Nov 2026`. The version is read from `VERSION` when the site is built. The date keeps the footer's own format. Forks that replace the footer keep it with `kitVersionLine()` or the `{{KIT_VERSION_LINE}}` placeholder.
+- The footer prompt that said **Use as an app** now says **Save for offline use**. Its help text says the control saves the site on the device for offline viewing, and that adding it to the home screen makes it open like an app.
+- No migration. The data shape is unchanged.
+
+
 ## v0.2.18 (2026-11-06)
 - **Upgrade command.** `python3 tools/upgrade.py <project>` backs the project up into `<project>/.backups/` (never `/tmp`), reads `KIT_VERSION` (missing means the oldest version), runs only the `migrations/` scripts newer than that version, writes the kit version, then runs `check_ids` and the site build. `--dry-run` shows what would run. The command exits non-zero if the checks fail. When the kit updates, run this; don't hand-migrate.
 - **v0.2.16 migration** adds empty `FAMILY_ASSERTIONS`, `SIBLING_EXCLUSIONS`, and `CANONICAL_ALIASES` when those names are absent. **v0.2.17 migration** adds empty `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS` when those names are absent. Both are no-ops when the fields are already there. Neither one changes relationships, facts, or confidence, and neither merges people.

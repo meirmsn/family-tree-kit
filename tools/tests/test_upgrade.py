@@ -99,7 +99,7 @@ class Upgrade(unittest.TestCase):
     def test_new_project_records_kit_version_and_empty_fields(self):
         kit = read(os.path.join(KIT, "VERSION")).strip()
         self.assertEqual(read(os.path.join(self.project, "KIT_VERSION")).strip(), kit)
-        self.assertEqual(kit, "0.2.18")
+        self.assertEqual(kit, "0.2.19")
         have = common.assigned_names(read(spec_path(self.project)))
         for name in SHAPE:
             self.assertIn(name, have)
@@ -188,7 +188,7 @@ class Upgrade(unittest.TestCase):
         self.assertNotIn("migration v0.2.16", out)
         self.assertIn("migration v0.2.17", out)
         self.assertIn("added NAME_FORMS = {}", out)
-        self.assertEqual(read(os.path.join(self.project, "KIT_VERSION")).strip(), "0.2.18")
+        self.assertEqual(read(os.path.join(self.project, "KIT_VERSION")).strip(), "0.2.19")
 
     def test_current_version_runs_no_migrations(self):
         spec = read(spec_path(self.project))
@@ -196,7 +196,7 @@ class Upgrade(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("migration: none", out)
         self.assertEqual(read(spec_path(self.project)), spec)
-        self.assertEqual(read(os.path.join(self.project, "KIT_VERSION")).strip(), "0.2.18")
+        self.assertEqual(read(os.path.join(self.project, "KIT_VERSION")).strip(), "0.2.19")
 
     def test_dry_run_writes_nothing(self):
         self._strip(SHAPE)
@@ -206,7 +206,7 @@ class Upgrade(unittest.TestCase):
         self.assertIn("(dry-run)", out)
         self.assertIn("would add FAMILY_ASSERTIONS = []", out)
         self.assertIn("would add NAME_FORMS = {}", out)
-        self.assertIn("would write KIT_VERSION 0.2.18", out)
+        self.assertIn("would write KIT_VERSION 0.2.19", out)
         self.assertIn("would run: check_ids, site build", out)
         self.assertIn("no files written", out)
         self.assertEqual(read(spec_path(self.project)), spec)

@@ -1,5 +1,5 @@
-/* PWA client side: registers the service worker, the "Use as an app" footer box (install button on
- * Android/desktop Chrome, Add-to-Home-Screen steps on iPhone/iPad), offline badge and the
+/* PWA client side: registers the service worker, the "Save for offline use" footer box (install
+ * button on Android/desktop Chrome, Add-to-Home-Screen steps on iPhone/iPad), offline badge and the
  * "Save all records for offline" control. Independent of app.js. */
 (function () {
   "use strict";

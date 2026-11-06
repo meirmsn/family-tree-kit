@@ -49,9 +49,9 @@ Describes the site in `site/` (`build.py`, `pwa.py`, `web/`). The site is a **st
 - **Stats strip:** people count, generations back, counts per confidence level, record images and sources.
 - **Open questions** (curated key questions only; the full list stays private because it names possibly-living collateral relatives).
 - **Archive requests** status table (code, archive, what, awaiting/hold/replied).
-- "Last updated" date from the newest input file; credits/licences for D3 and Fuse.js.
+- Footer: kit version, then the "Last updated" date from the newest input file (`v0.2.19 · Last updated 6 Nov 2026`). Forks that replace the footer keep the version with `kitVersionLine()` or `{{KIT_VERSION_LINE}}`. Credits/licences for D3 and Fuse.js follow.
 - **Responsive** layouts (≤ 640/720/960/1100 px breakpoints, portrait tablets), `prefers-reduced-motion`, dark mode, keyboard access throughout.
-- **PWA:** installable (`manifest.webmanifest`, display standalone, generated icons incl. maskable), service worker precaching versioned assets and data for offline use.
+- **PWA:** **Save for offline use** in the footer saves the site on the device for offline viewing; adding it to the home screen makes it open like an app (`manifest.webmanifest`, display standalone, generated icons incl. maskable), service worker precaching versioned assets and data.
 
 ## 3. Privacy and security model
 1. **Access control before any data upload.** The site lives behind **Cloudflare Access** (email allowlist + one-time PIN). Set up Access on the Pages project (production *and* preview URLs) **before** the first deploy of real data; deploy a placeholder first if needed.

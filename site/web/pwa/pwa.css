@@ -1,4 +1,4 @@
-/* PWA UI: "Use as an app" footer box, offline badge, new-version notice. */
+/* PWA UI: "Save for offline use" footer box, offline badge, new-version notice. */
 .app-box { margin: 14px 0 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
   display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .app-box[hidden] { display: none; }

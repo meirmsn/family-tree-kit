@@ -2,6 +2,7 @@
 import glob
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -180,6 +181,46 @@ class BuildExample(unittest.TestCase):
             sources_md=open(os.path.join(SITE, "example", "data", "sources.md"), encoding="utf-8").read(),
             pseudo_sources=build.spec.PSEUDO_SOURCES)
         self.assertEqual(warns, [])
+
+    def test_footer_shows_kit_version_before_last_updated(self):
+        """Fictional example: the footer leads with the kit version, then the existing last-updated date."""
+        line = build.kit_version_line()
+        self.assertEqual(line, "v" + build.kit_version())
+        self.assertNotIn("updated", line.lower())
+        self.assertRegex(self.data["lastUpdated"], r"^\d{1,2} [A-Z][a-z]{2} \d{4}$")
+        html = open(os.path.join(self.out, "index.html"), encoding="utf-8").read()
+        self.assertIn(
+            f'<span id="kit-version">{line}</span> · Last updated '
+            f'<time datetime="{self.data["lastUpdatedISO"]}">{self.data["lastUpdated"]}</time>',
+            html)
+        self.assertNotIn("{{KIT_VERSION_LINE}}", html)
+        self.assertNotIn("Use as an app", html)
+        self.assertIn("Save for offline use", html)
+        self.assertIn("Saves this site on the device for offline viewing.", html)
+        self.assertIn("Add it to the home screen and it opens like an app.", html)
+        self.assertIn("That saves the site for offline viewing, and it opens like an app.", html)
+        js = open(os.path.join(self.out, "assets", "app.js"), encoding="utf-8").read()
+        self.assertIn(f'let text = "{line}";', js)
+        self.assertIn("function kitVersionLine()", js)
+        self.assertNotIn("{{KIT_VERSION_LINE}}", js)
+        legend = js.split("function confKey", 1)[1].split("function yearsLabel", 1)[0]
+        self.assertNotIn("kitVersionLine", legend)
+        self.assertNotIn("kit-version", legend)
+        self.assertEqual(js.count("confKey(true)"), 2)
+
+
+class KitVersionLine(unittest.TestCase):
+    """Formatter only: a fictional version, no tree data."""
+
+    def test_version_token_has_no_date_or_product_name(self):
+        self.assertEqual(build.kit_version_line(version="9.8.7"), "v9.8.7")
+        self.assertEqual(build.kit_version_line(version="v9.8.7"), "v9.8.7")
+        self.assertNotIn("updated", build.kit_version_line(version="9.8.7").lower())
+
+    def test_version_file_is_the_source(self):
+        recorded = open(os.path.join(os.path.dirname(SITE), "VERSION"), encoding="utf-8").read().strip()
+        self.assertEqual(build.kit_version(), recorded[1:] if recorded[:1] in "vV" else recorded)
+        self.assertEqual(build.kit_version_line(), "v" + build.kit_version())
 
 
 class CollapseErrors(unittest.TestCase):
