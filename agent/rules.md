@@ -46,9 +46,14 @@ These are the non-negotiables. Every worker brief repeats them. METHODOLOGY.md �
 16. **Record every relationship a record shows.** Not just the direct line: other children of the
     same parents, half-siblings, a spouse's parents, and witnesses or informants identified as
     relatives. Each gets a person entry (with a confidence label and the record's link); index-only
-    hits stay leads; living or recent people stay name-only. Put them on the site via
-    `OTHER_FAMILY` / `RELATIVES` so siblings and other children appear in panels
-    (`docs/research-process-lessons.md` §9). Person `note=` text and site-facing source **titles**,
+    hits stay leads; living or recent people stay name-only. **When you record any person, record
+    all known siblings and their parents.** Encode a sibling relationship through shared parents,
+    or through an explicit sibling list with a citation and a confidence on that link. Every
+    person's page lists all known siblings, on the chart and off it (`OTHER_FAMILY` / `RELATIVES`,
+    and `FAMILY_ASSERTIONS` when both people are already on the chart). `check_ids.py --spec` and
+    the site build warn when a named sibling or child of a couple is not encoded as a linked
+    person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than
+    the data records (`docs/research-process-lessons.md` §9). Person `note=` text and site-facing source **titles**,
     **Why this record matters** / Notes / Summary describe only the person or record — never
     migration or build process, and never agent/research bookkeeping (`parent agent`, `the user`,
     `Pass N`, message ids, `relayed by`, `headed browser`, `sidecar`, `worker brief`).

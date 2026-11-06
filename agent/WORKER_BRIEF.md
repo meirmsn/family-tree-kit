@@ -27,9 +27,12 @@ RULES (non-negotiable; from agent/rules.md and docs/research-process-lessons.md)
   (Geneteka-style, JRI, search hits) are leads only — check the original scan before citing.
   A catalogue unit with 0 scans is an archive request, not a negative.
 - Record every relationship a record shows (siblings, half-siblings, spouse's parents, related
-  witnesses/informants), not just the direct line. Each gets a person entry with a label and the
-  record's link; index-only hits stay leads; living/recent stay name-only. Surface them on the site
-  through OTHER_FAMILY / RELATIVES (lessons §9).
+  witnesses/informants), not just the direct line. When you record any person, record all known
+  siblings and their parents. Encode siblings through shared parents, or an explicit sibling list
+  with a citation and a confidence on that link. Every person's page lists all known siblings, on
+  the chart and off it (OTHER_FAMILY / RELATIVES, or FAMILY_ASSERTIONS when both are on the chart).
+  Index-only hits stay leads; living/recent stay name-only (lessons §9). `check_ids.py --spec` warns
+  when a named sibling is not linked, a sibling link is not reciprocal, or a panel would show fewer.
 
 PASS: <N>  (heading in every file you touch: "## Pass <N> (<date>, <time range>, <S-range>, <P-range>; append-only)")
 

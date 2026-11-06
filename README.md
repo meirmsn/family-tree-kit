@@ -36,9 +36,11 @@ The method is spelled out in [METHODOLOGY.md](METHODOLOGY.md) and the agent brie
 - **Free sources first; read the scan.** Indexes are leads. A fact becomes confirmed only after the
   record image (or an authoritative transcript) is read. Negatives and blocked searches are logged
   so the next pass does not repeat them.
-- **Record everyone the record shows.** Siblings, half-siblings, a spouse's parents, and related
-  witnesses or informants get their own entries and can appear as "Other family" on the site — not
-  only the direct line.
+- **Record everyone the record shows.** When you record a person, record every known sibling and
+  their parents. Siblings, half-siblings, a spouse's parents, and related witnesses or informants
+  get their own entries. Encode a sibling relationship through shared parents, or through an
+  explicit sibling list with a citation and a confidence on that link. Every person's page — on
+  the chart and off it — lists all known siblings.
 - **The user decides.** The agent proposes relationship links and confidence changes; it never
   applies them alone. Archive letters are drafted by the agent and **sent by the user**.
 - **Append-only research files.** Back up before edits; correct by adding a dated section, never by
@@ -63,8 +65,11 @@ In spite of that — individuals already doing this with Grok Bot — **we creat
 - Empty templates and small tools for IDs, sidecars, backups, polite queries, Access checks and a
   privacy sweep.
 - An optional **private** static site: circular fan chart, person panels with per-fact confidence
-  styling, record lightbox with "why this record matters", fuzzy search, people table, open
-  questions and archive-request status.
+  styling, an **All known siblings** list on every on-chart and off-chart person, record lightbox
+  with "why this record matters", fuzzy search, people table, open questions and archive-request
+  status. `check_ids.py --spec` and the build warn when a named sibling or child of a couple is
+  not encoded, a sibling link is not reciprocal, or a panel would list fewer siblings than the
+  files record.
 - Confidence shown as colored words in the legend (`confirmed`, `probable`, `possible`, `family
   lore` with a LORE pill) — no sample dates that look like real profile values.
 - Installable as a PWA (manifest, service worker, fan-chart icons) once the site is published behind
@@ -148,6 +153,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 ## Build log
 
 ### Research and data
+- **v0.2.16** — record every known sibling and their parents (shared parents, or an explicit sibling list with citation and confidence). `check_ids.py` and the site build warn when those people are not linked, a sibling link is not reciprocal, or a panel would show fewer siblings than the files record.
 - **v0.1.0** — first kit: method, agent instructions, templates, tools, fictional example, migration feedback from earlier research work.
 - **v0.2.0–v0.2.1** — research-process lessons (backups, negatives, indexes-first, propose-before-changing links); confidence qualifiers; home-person merge and draft renumbering; private-words list required.
 - **v0.2.2–v0.2.3** — safer draft renumbering; privacy whole-word + simple suffixes; `--strict` required before sharing.
@@ -157,6 +163,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 - **v0.2.14** — same process-word lint on record sidecars: "Why this record matters", Notes, Summary.
 
 ### Site and docs
+- **v0.2.16** — every person panel, on the chart and off it, lists all known siblings. Each link keeps its own confidence and sources. Fan positions stay the same.
 - **v0.2.4–v0.2.6** — README screenshots from the fictional example (including interactive panel, evidence and hover-tip shots).
 - **v0.2.7–v0.2.9** — credits and thanks; Inspiration (Pompliano); note of a future distributed-archive idea (not implemented).
 - **v0.2.11** — first public release of the kit.
@@ -179,8 +186,10 @@ Full notes: [CHANGELOG.md](CHANGELOG.md).
 - **Privacy checks are pattern-based.** The local word list catches listed forms (plus a few simple
   suffixes); it does not stem or understand context. Public CI is deliberately name-blind. Both can
   miss things.
-- **Fan chart shows direct ancestors only.** Collateral and other relatives appear in person panels
-  ("Other family"), not as rings on the chart.
+- **Fan chart shows direct ancestors only.** Collateral and other relatives are not rings on the
+  chart. Every person panel still lists all known siblings, on the chart and off it, when those
+  links are recorded (shared parents or an explicit sibling list). The check warns when the files
+  name siblings the panels would not show; it does not invent siblings that were never recorded.
 - **Single protected site per tree.** The intended deploy is one Cloudflare Pages project behind
   Access for that tree. GitHub Pages and other public static hosts are not suitable.
 - **Handwriting and indexes remain hard.** Misreadings and weak index hits are expected; the method

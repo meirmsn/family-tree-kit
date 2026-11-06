@@ -22,7 +22,7 @@ Describes the site in `site/` (`build.py`, `pwa.py`, `web/`). The site is a **st
 
 ### Person panel (`app.js`)
 - Side panel (desktop) / draggable bottom sheet (mobile), **sticky header** with Back · Sources · Close, eyebrow, name and byline.
-- Sections: summary facts (born, died, places, occupation, name variants), each value with **its own confidence style** and source superscripts; parents/spouse/children links; notes; **Other family** (siblings, other spouses/children, aunts/uncles) with the same confidence styling; source cards with record thumbnails.
+- Sections: summary facts (born, died, places, occupation, name variants), each value with **its own confidence style** and source superscripts; parents/spouse/children links; notes; **All known siblings** (every on-chart person and every off-chart relative; each link keeps its own confidence, qualification, and sources); **Other family** (other spouses/children, aunts/uncles) with the same confidence styling; source cards with record thumbnails.
 - **Sources toggle** (in the header, off by default, remembered in localStorage) shows/hides source superscripts everywhere.
 - **Every name is tappable**, including names and P-numbers inside record texts: opens that person's panel. Off-chart relatives get their own small panel; while open, the fan is dimmed and their on-chart relative is outlined.
 - **Back history stack** (Back button, Alt+←).

@@ -16,6 +16,9 @@ Rules (also in `templates/collateral/README.md`):
 Report: the evidence for each proposed promotion, in one short table (claim, records, labels).
 
 7. After capturing collateral people, add them to the site spec's `RELATIVES` and wire them from the
-   relevant fan person in `OTHER_FAMILY` (Siblings / Other children / …) so panels show them.
-   `check_ids.py --spec` warns when those maps look empty relative to what notes and records name.
+   relevant fan person in `OTHER_FAMILY` (Siblings / Other children / …). Record each sibling's
+   parents (shared parent ids, or an explicit sibling list with a citation and confidence). Every
+   person's page lists all known siblings, on the chart and off it.
+   `check_ids.py --spec` warns when those maps look empty, when a named sibling or child of a couple
+   is not encoded, when a sibling link is not reciprocal, or when a panel would show fewer siblings.
 

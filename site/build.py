@@ -43,6 +43,7 @@ import pwa  # noqa: E402  (icons, manifest, service worker)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
 from gklib import (is_placeholder, other_family_warnings, process_note_warnings,  # noqa: E402
                    process_sidecar_warnings, process_source_text_warnings, project_files)  # shared with tools/check_ids.py
+from siblings import attach_siblings, sibling_coverage_warnings  # noqa: E402
 
 WEB = os.path.join(HERE, "web")
 NM = os.path.join(HERE, "node_modules")
@@ -110,7 +111,8 @@ def configure(config_path):
     for name, default in (("PSEUDO_SOURCES", {}), ("OPEN_QUESTIONS", []), ("ARCHIVE_REQUESTS", []), ("FIELDS", {}),
                           ("OCC", {}), ("AKA", {}), ("SOURCE_TITLES", {}), ("RELATIVES", {}), ("OTHER_FAMILY", {}),
                           ("GAZETTEER", set()), ("PLACE_ALIASES", {}), ("UNLINKED_SOURCES", []),
-                          ("RESTRICTED_SOURCES", {}), ("PUBLIC_RECENT_SOURCES", set())):
+                          ("RESTRICTED_SOURCES", {}), ("PUBLIC_RECENT_SOURCES", set()),
+                          ("FAMILY_ASSERTIONS", []), ("SIBLING_EXCLUSIONS", []), ("CANONICAL_ALIASES", {})):
         if not hasattr(spec, name):
             setattr(spec, name, default)
     if not hasattr(spec, "PEOPLE") or not hasattr(spec, "LINES"):
@@ -631,7 +633,8 @@ def build_people(sources, people_md, warnings):
             print("  " + d)
     for r in people:
         groups, order = {}, []
-        for group, key, rel in other_family.get(r["id"], []):
+        for entry in other_family.get(r["id"], []):
+            group, key, rel = entry[0], entry[1], entry[2]
             q = spec.RELATIVES[key]
             if base_conf(q["conf"]) not in CONFS:
                 raise SystemExit(f"bad confidence for relative {key}")
@@ -679,7 +682,8 @@ def derive_other_family(other_family, people, notes=None):
     stay on RELATIVES. Returns a new dict; `notes` (list) receives one line per derived entry."""
     out = {k: list(v) for k, v in other_family.items()}
     for r in people:
-        for group, key, rel in other_family.get(r["id"], []):
+        for entry in other_family.get(r["id"], []):
+            group, key, rel = entry[0], entry[1], entry[2]
             if not group.startswith("Siblings"):
                 continue
             label = rel
@@ -691,7 +695,7 @@ def derive_other_family(other_family, people, notes=None):
                 label = "Child" + (" " + rel[rel.index("("):] if "(" in rel else "")
             for par in r.get("parents", []):
                 cur = out.setdefault(par, [])
-                if any(k == key for _, k, _ in cur):
+                if any(e[1] == key for e in cur):
                     continue
                 cur.append(("Other children", key, label))
                 if notes is not None:
@@ -911,14 +915,16 @@ def first_year(s):
     return int(m.group(1)) if m else None
 
 
-def build_sources(people, sources_md, side, warnings, img_out):
+def build_sources(people, sources_md, side, warnings, img_out, rels=None):
     name_only_pids = {p["pid"] for p in spec.PEOPLE if p.get("pid") and any(
         r["id"] == p["id"] and r["nameOnly"] for r in people)}
+    rels = rels or {}
     all_cited = {s for r in people for s in r["sources"]}
+    all_cited |= {s for q in rels.values() for s in q.get("s") or []}
     all_cited |= set(getattr(spec, "UNLINKED_SOURCES", ()))  # shown on the site but not tied to anyone
     # "cited for": which people/fields cite each source
     labels = {"born": "birth", "died": "death", "places": "places", "occ": "occupation", "aka": "names",
-              "link": "parentage", "spouse": "marriage", "other": "other family"}
+              "link": "parentage", "spouse": "marriage", "other": "other family", "sibling": "sibling"}
     cited = {}
     for r in people:
         uses = {}
@@ -932,8 +938,19 @@ def build_sources(people, sources_md, side, warnings, img_out):
                     uses.setdefault(s, []).append(labels[k])
         for s in r.pop("otherSrc", {}):
             uses.setdefault(s, []).append(labels["other"])
+        for s in r.pop("siblingSrc", ()) or ():
+            uses.setdefault(s, []).append(labels["sibling"])
         for s in r["sources"]:
             cited.setdefault(s, []).append({"id": r["id"], "what": sorted(set(uses.get(s, [])), key=list(labels.values()).index)})
+    for q in rels.values():
+        uses = {}
+        sib = set(q.pop("siblingSrc", ()) or ())
+        for s in q.get("s") or []:
+            if s in sib:
+                uses.setdefault(s, []).append(labels["sibling"])
+            uses.setdefault(s, []).append(labels["other"])
+            cited.setdefault(s, []).append(
+                {"id": q["id"], "what": sorted(set(uses[s]), key=list(labels.values()).index)})
     out, img_seen, n_img = {}, {}, 0
     for sid in sorted(all_cited, key=lambda x: (x[0], int(x[1:]))):
         if sid in spec.PSEUDO_SOURCES:
@@ -1083,8 +1100,32 @@ def build():
     read("relationships.md"); read("leads.md")  # inputs (checked for presence)
     side = load_sidecars()
     people = build_people(sources_md, people_md, warnings)
+    rels = build_relatives(people)
+    known_sources = set(sources_md) | set(getattr(spec, "PSEUDO_SOURCES", {}))
+    attach_siblings(
+        people, rels, other_family=getattr(spec, "OTHER_FAMILY", {}),
+        relatives_spec=getattr(spec, "RELATIVES", {}),
+        assertions=getattr(spec, "FAMILY_ASSERTIONS", []),
+        exclusions=getattr(spec, "SIBLING_EXCLUSIONS", []),
+        aliases=getattr(spec, "CANONICAL_ALIASES", {}),
+        known_sources=known_sources,
+    )
+    relationships_md = read("relationships.md")
+    collateral_texts = []
+    for path in sorted(glob.glob(os.path.join(GEN_DIR, "collateral", "*.md"))):
+        with open(path, encoding="utf-8") as f:
+            collateral_texts.append(f.read())
+    for w in sibling_coverage_warnings(
+            spec.PEOPLE, getattr(spec, "RELATIVES", {}), getattr(spec, "OTHER_FAMILY", {}),
+            people_md=people_md, relationships_md=relationships_md,
+            family_assertions=getattr(spec, "FAMILY_ASSERTIONS", []),
+            exclusions=getattr(spec, "SIBLING_EXCLUSIONS", []),
+            aliases=getattr(spec, "CANONICAL_ALIASES", {}),
+            fields=getattr(spec, "FIELDS", {}), known_sources=known_sources,
+            collateral_texts=collateral_texts, emitted_people=people, emitted_rels=rels):
+        warnings.append(w)
     img_out = {}
-    srcs, n_img = build_sources(people, sources_md, side, warnings, img_out)
+    srcs, n_img = build_sources(people, sources_md, side, warnings, img_out, rels)
     oq = parse_open_questions(read("open-questions.md"))
     mtimes = [os.path.getmtime(os.path.join(GEN_DIR, n)) for n in
               ("people.md", "relationships.md", "sources.md", "open-questions.md", "leads.md")]
@@ -1113,7 +1154,6 @@ def build():
             if PUBLISH == "strict" else
             "Private family site behind access control. Every person and every record is shown in full (family decision)."),
     }
-    rels = build_relatives(people)
     data["relatives"] = rels
     data["links"] = build_links(people, rels)
     search_blob = json.dumps(build_search(people, rels, srcs), ensure_ascii=False)

@@ -52,11 +52,16 @@ They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow th
 - Each gets their own person entry (P- or C-number, or a `RELATIVES` key for the site) with a
   confidence label and the record's source link. Index-only hits stay **leads**. Living or recent
   people stay **name-only** on the site.
-- Surface them on the private site through `OTHER_FAMILY` / `RELATIVES` so `derive_other_family` can
-  show siblings and other children on person panels. A direct-line-only migration that leaves
-  `OTHER_FAMILY` empty will publish a site with no siblings even when the records named them.
+- Surface them on the private site through `OTHER_FAMILY` / `RELATIVES` (and `FAMILY_ASSERTIONS`
+  when both people are already on the chart) so every person's page lists **all known siblings**,
+  on the chart and off it. Encode each sibling relationship through shared parents, or through an
+  explicit sibling list with a citation and a confidence on that link. Record the siblings' parents
+  in the same pass. A direct-line-only migration that leaves `OTHER_FAMILY` empty will publish a
+  site with no siblings even when the records named them.
 - `tools/check_ids.py --spec` (and the site build) warn when `OTHER_FAMILY` / `RELATIVES` look empty
-  or much thinner than siblings/children named in notes or `people.md`.
+  or much thinner than siblings/children named in notes or `people.md`, and when a named sibling or
+  child of a couple is not encoded as a linked person, a sibling link is not reciprocal, or a panel
+  would show fewer siblings than the data records.
 - Person summaries (`note=` on PEOPLE / RELATIVES) and site-facing source **titles** and record
   sections (**Why this record matters**, Notes / discrepancies, Summary) describe only the person
   or record — never migration, cloning, snapshots, kit or build process, and never agent/research

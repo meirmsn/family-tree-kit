@@ -31,6 +31,7 @@ Goal: get what the family already knows, in their words, with spelling uncertain
 - Ask what documents exist at home: passports, naturalisation papers, ketubot/marriage contracts, letters, photos with writing on the back, tombstones, recorded interviews, existing family trees (Geni/MyHeritage).
 - Ask for **lore** explicitly: "Was anyone said to come from X?", "Any famous rabbi/relative?", "Who survived the war, where did they go?", "Which ports/ships?"
 - Ask about **siblings** of each ancestor and **what happened to them** (they leave records; see section 5).
+- When an answer names a person, record that person's **siblings and those siblings' parents** in the same pass (section 2.8). A sibling left only in a sentence is not yet recorded.
 
 **Recording**
 - Each answer goes into `people.md` immediately as **lore**, with a **U-source** (e.g. `U3 — information from the user's father, relayed by the user, 2026-11-04 08:18`).
@@ -100,6 +101,14 @@ Each research run is a **pass** with a number (Pass 1, 2, … or Batch N). Every
 - Before any edit: copy every file to be edited (or the whole project) to a timestamped backup, e.g. `/backups/genealogy_backup_YYYYMMDD_HHMMSS/` or numbered `file.md.bakNN`. Record the backup path in the research-log entry.
 - Use **your own** working directory, never `/tmp` shared by other agents (one project lost working images when another process overwrote `/tmp`). If it already happened, rescue the scans with `tools/rescue_scans.py` (inventory, de-duplicate, disk check, batch copy: `agent/briefs/rescue-scans.md`).
 - **Save after each step** of a multi-step pass, so an interrupted run loses little; on resume, first read the log tail and check which backup exists.
+
+### 2.8 Siblings (every person, not only the direct line)
+When you record any person — home person, ancestor, or collateral — record **every known sibling and both of their parents**.
+
+- Encode the relationship by **shared parents** (the same parent ids on each child), or by an **explicit sibling list** that carries its own citation and confidence. A half-sibling shares one recorded parent, not both; do not copy the other parent from a different union.
+- Give each sibling a person entry (P-number, C-number, or a `RELATIVES` key) with that link's confidence. Index-only hits stay leads. Living or recent people stay name-only.
+- On the site, **every person's page lists all known siblings**, whether the person is on the fan chart or off it. The fan itself still shows only direct ancestors. Two people already on the chart who are siblings are encoded with shared parents or `FAMILY_ASSERTIONS`, not by duplicating either as an off-chart relative.
+- `tools/check_ids.py --spec` and the site build warn when the files name a sibling or a child of a couple who is not encoded as a linked person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than the data records.
 
 ---
 
@@ -199,8 +208,9 @@ Periodically (e.g. after every ~10 passes, or before publishing), re-download an
    - the record naming the earlier generation is at least **probable**,
    - ideally via **one record that states the relationship directly**, or **two independent records that agree**.
 4. A promotion is **proposed** (in the pass report and in people.md) and applied **only after the user approves**, in a new pass that records the approval time. Weaker candidates stay *possible* in collateral.
-5. The site's fan chart shows **only direct ancestors**; collateral relatives appear in "Other family" panels or not at all.
+5. The site's fan chart shows **only direct ancestors**. Every person's page still lists **all known siblings**, on the chart and off it (section 2.8). Other relatives appear in "Other family" panels.
 6. Living collateral relatives: records only, no private-life research.
+7. A collateral sibling is recorded with their parents (shared parent ids, or an explicit sibling list with a citation and a confidence). `check_ids.py --spec` warns when that link is missing, one-way, or absent from the panel.
 
 *Worked example (anonymised):* A Page of Testimony filed by a cousin named the parents of a man in town H. A birth act in district S named the same couple. The man was a probable brother of our ancestor J (family lore + same rare surname + same district). A second civil record gave two more daughters of the couple. Promotion of the couple to J's parents was proposed as *probable*, held until the user approved, then applied with the collateral entries kept as pointers.
 
