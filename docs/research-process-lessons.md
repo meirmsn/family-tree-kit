@@ -57,7 +57,9 @@ They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow th
   `OTHER_FAMILY` empty will publish a site with no siblings even when the records named them.
 - `tools/check_ids.py --spec` (and the site build) warn when `OTHER_FAMILY` / `RELATIVES` look empty
   or much thinner than siblings/children named in notes or `people.md`.
-- Person summaries (`note=` on PEOPLE / RELATIVES) and site-facing record sections (**Why this
-  record matters**, Notes / discrepancies, Summary) describe only the person or record — never
-  migration, cloning, snapshots, kit or build process. The same tools warn on those process stems.
+- Person summaries (`note=` on PEOPLE / RELATIVES) and site-facing source **titles** and record
+  sections (**Why this record matters**, Notes / discrepancies, Summary) describe only the person
+  or record — never migration, cloning, snapshots, kit or build process, and never agent/research
+  bookkeeping (`parent agent`, `owner message`, message ids like `[pt12u]`, `relayed by`, `the user`,
+  `Pass N`, `headed browser`, `sidecar`, `worker brief`). The same tools warn on those stems.
 

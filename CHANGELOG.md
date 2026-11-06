@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.15 (2026-11-06)
+- Process-word lint also flags **agent bookkeeping** in site-facing source titles, summaries and notes: phrases like `parent agent`, `owner message`, message ids (`[pt12u]` / `[t12u]`), `relayed by`, `the user`, `Pass N`, `headed browser`, `sidecar`, `worker brief`. Covers sidecar front-matter titles, Why/Notes/Summary sections, and `sources.md` entries. Site-facing text must describe the record and the person, never the research process or the agent conversation.
+
+
 ## v0.2.14 (2026-11-06)
 - Process-word lint also covers record sidecars: **Why this record matters**, Notes / discrepancies, and Summary (same stems as `note=`). Site-facing text must describe only the person or record, not migration/build process.
 
