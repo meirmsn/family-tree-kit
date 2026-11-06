@@ -77,20 +77,27 @@ In spite of that — individuals already doing this with Grok Bot — **we creat
 Two halves: **research and data**, then **visualization**. The public kit never holds personal data;
 the agent builds a private project folder and the site generator reads that folder.
 
-```mermaid
-flowchart TB
-  subgraph ingest ["1. Data ingestion and processing"]
-    direction TB
-    I[Interview / family lore U-sources] --> S[Record searches on free sources]
-    S --> R[Sources, scans, sidecar files]
-    R --> P[people.md · sources.md · relationships.md]
-    P --> C[ID checks · process-word lint · privacy gates]
-  end
-  subgraph viz ["2. Visualization"]
-    direction TB
-    B["build.py → static fan-chart PWA"] --> D[Deploy behind Cloudflare Access login]
-  end
-  C --> B
+```text
+Data ingestion and processing
+  interview + family lore
+       |
+       v
+  record searches (free archives, indexes)
+       |
+       v
+  sources, scans, record sidecars
+       |
+       v
+  people.md  |  sources.md  |  relationships.md
+       |
+       v
+  ID checks + process-word lint + privacy checks
+
+Visualization
+  site/build.py  -->  static fan-chart PWA
+       |
+       v
+  deploy behind Cloudflare Access login
 ```
 
 **1. Data ingestion and processing.** The agent interviews, searches free archives and indexes,
