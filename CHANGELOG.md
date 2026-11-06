@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.12 (2026-11-05)
+- Research rule (**lessons §9**, `agent/rules.md` §16, worker + migrate/collateral/site-update briefs): record every relationship a record shows (siblings, half-siblings, spouse's parents, related witnesses/informants), not just the direct line; surface them on the site via `OTHER_FAMILY` / `RELATIVES`.
+- `check_ids.py --spec` and `site/build.py` **warn** when `OTHER_FAMILY`/`RELATIVES` are empty or much thinner than siblings/children named in notes or `people.md` (simple mention-count heuristic in `tools/gklib.py`).
+- Same path **warns** when a PEOPLE or RELATIVES `note=` contains process stems (`migrat`, `clone`, `copied`, `snapshot`, `generated`, `kit`, `build`); notes should describe only the person and what the records show.
+- Tests for both warnings (fictional fixtures only).
+
+
 ## v0.2.10 (2026-11-05)
 - **Multi-layer privacy filters** (SECURITY.md §5.1). Private word lists stay outside the kit: per-project `PROJECT/.work/private-words.txt` and/or the new **`GENEALOGY_PRIVATE_WORDS`** env var (lookup: `--words`, `--project`, env, project REPO). `privacy_grep.py` refuses a word list that is tracked by git inside the scanned repo.
 - `privacy_grep.py --install-hook` now installs **pre-commit and pre-push** hooks (local, never committed). pre-push runs `--history` with the word list, then `--public-ci --history`; any hit blocks the push. Env-var mode reads `$GENEALOGY_PRIVATE_WORDS` at run time and fails closed when unset. Foreign hooks are kept unless `--force`.

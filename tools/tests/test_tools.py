@@ -447,6 +447,99 @@ class Migrate(unittest.TestCase):
         self.assertRegex(out, r"\b4 hit\(s\)")
 
 
+
+class SpecOtherFamilyAndNotes(unittest.TestCase):
+    """Fictional fixtures only: OTHER_FAMILY coverage + process-word note lint."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.p = new_project(os.path.join(self.tmp, "t"))
+        write(os.path.join(self.p, "people.md"),
+              "# People\n\n## P1 Rowan Ashdown\n- Born 1900 (S1, confirmed)\n"
+              "- Sister: Ida (S1, confirmed)\n- Brother: Tomas (S1, confirmed)\n\n"
+              "## P2 Father\n- Father of P1 (S1, confirmed)\n\n"
+              "## P3 Mother\n- Mother of P1 (S1, confirmed)\n")
+        write(os.path.join(self.p, "sources.md"),
+              "# Sources\n\n- S1 — **A record** — x (confirmed)\n- U1 — **Interview** — y\n")
+
+    def _spec(self, body):
+        path = os.path.join(self.p, "site", "people_spec.py")
+        write(path, body)
+        return path
+
+    def test_process_word_in_note_warns(self):
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Migrated from the old snapshot in the kit build.'),\n"
+            " dict(id='p2', pid='P2', name='Father', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Mother', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\nRELATIVES = {}\nOTHER_FAMILY = {}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)  # warn-only without --strict
+        self.assertIn("process word", out)
+        self.assertRegex(out, r"Migrated|migrated|snapshot|kit|build")
+        code2, out2 = run("check_ids.py", self.p, "--spec", spec, "--strict")
+        self.assertEqual(code2, 1, out2)
+
+    def test_empty_other_family_warns(self):
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person.'),\n"
+            " dict(id='p2', pid='P2', name='Father', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Mother', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\nRELATIVES = {}\nOTHER_FAMILY = {}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)
+        self.assertIn("OTHER_FAMILY/RELATIVES are empty", out)
+
+    def test_wired_other_family_clean_of_empty_warn(self):
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person on the fan.'),\n"
+            " dict(id='p2', pid='P2', name='Father', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Mother', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\n"
+            "RELATIVES = {'ida': dict(name='Ida', conf='confirmed', src=['S1'],"
+            " note='Born 1923; named on the same birth act.')}\n"
+            "OTHER_FAMILY = {'p1': [('Siblings', 'ida', 'Sister')]}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("OTHER_FAMILY/RELATIVES are empty", out)
+        self.assertNotIn("process word", out)
+
+    def test_thin_other_family_warns(self):
+        write(os.path.join(self.p, "people.md"),
+              "# People\n\n## P1 Rowan Ashdown\n- Born 1900 (S1, confirmed)\n"
+              "- Sister: Ida (S1)\n- Brother: Tomas (S1)\n- Sister: Nora (S1)\n"
+              "- Brother: Eli (S1)\n\n"
+              "## P2 Father\n- Father of P1 (S1, confirmed)\n\n"
+              "## P3 Mother\n- Mother of P1 (S1, confirmed)\n")
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person.'),\n"
+            " dict(id='p2', pid='P2', name='Father', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Mother', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\n"
+            "RELATIVES = {'ida': dict(name='Ida', conf='confirmed', src=['S1'], note='Elder.')}\n"
+            "OTHER_FAMILY = {'p1': [('Siblings', 'ida', 'Sister')]}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)
+        self.assertIn("mention siblings/children about", out)
+
+
+
 class FreshProject(unittest.TestCase):
     def test_check_ids_clean_on_brand_new_project(self):
         tmp = tempfile.mkdtemp()
@@ -509,7 +602,7 @@ class PrivacyLayers(unittest.TestCase):
     def test_quarantine_shapes(self):
         q = self.pg.quarantine_category
         for ok in ("site/example/people_spec.py", "site/site.config.json", "templates/records/INDEX.md",
-                   "site/example/data/records/a/x.jpg", "docs/screenshot-phone-fan.png", "site/web/favicon.svg",
+                   "site/example/data/records/a/x.jpg", "docs/screenshot-phone.png", "site/web/favicon.svg",
                    "tools/privacy_grep.py", "README.md"):
             self.assertIsNone(q(ok), ok)
         for bad in ("genealogy-trees/t/people.md", "x/.work/private-words.txt", "private-words.txt",

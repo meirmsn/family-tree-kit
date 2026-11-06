@@ -25,7 +25,10 @@ Checks
 - With --spec: PEOPLE pids exist, sources exist (or are PSEUDO_SOURCES), child links resolve (a list
   of children = pedigree collapse), no cycles, at most one father and one mother per child, and each
   person's `line` matches the primary child's line (generation 3+), or the line implied by the
-  child and sex (grandparents: pp/pm/mp/mm; parents: paternal/maternal).
+  child and sex (grandparents: pp/pm/mp/mm; parents: paternal/maternal). Also (warnings): PERSON and
+  RELATIVES `note=` must not contain process stems (migrat/clone/copied/snapshot/generated/kit/build);
+  OTHER_FAMILY/RELATIVES should not be empty or much thinner than siblings/children named in notes or
+  people.md (see docs/research-process-lessons.md §9 and tools/gklib.py).
 Exit code 1 if any ERROR (with --strict, warnings count too).
 """
 import argparse
@@ -37,8 +40,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gklib import (DERIVED, ID_RE, TRANSLATION_STATUSES, UNUSED_LINE, body_sections, declared_unused,  # noqa: E402
-                   enclosing_project, front_matter, is_placeholder, num, project_files, read, sidecars,
-                   source_entries, strip_comments)
+                   enclosing_project, front_matter, is_placeholder, num, other_family_warnings,
+                   process_note_warnings, project_files, read, sidecars, source_entries, strip_comments)
 
 
 
@@ -71,7 +74,7 @@ def spec_children(p):
     return list(c) if isinstance(c, (list, tuple)) else [c]
 
 
-def check_spec(path, defined, errors, warns, info):
+def check_spec(path, defined, errors, warns, info, people_md=""):
     m = importlib.util.spec_from_file_location("people_spec", path)
     spec = importlib.util.module_from_spec(m)
     m.loader.exec_module(spec)
@@ -135,6 +138,13 @@ def check_spec(path, defined, errors, warns, info):
                             f"(line {by[extra].get('line')}); shown once in full and once as a repeat marker")
             elif extra in by:
                 info.append(f"spec {pid}: pedigree collapse — also a parent of {extra}")
+
+    relatives = getattr(spec, "RELATIVES", {}) or {}
+    other_family = getattr(spec, "OTHER_FAMILY", {}) or {}
+    for w in process_note_warnings(spec.PEOPLE, relatives):
+        warns.append(w)
+    for w in other_family_warnings(spec.PEOPLE, relatives, other_family, people_md):
+        warns.append(w)
 
 
 def main():
@@ -248,7 +258,7 @@ def main():
         info.append(f"sidecars: {len(seen)}; with a real transcription: {n_done}; status pending: {n_pending}")
 
     if a.spec:
-        check_spec(a.spec, defined, errors, warns, info)
+        check_spec(a.spec, defined, errors, warns, info, people_md=people_md)
 
     for label, items in (("ERROR", errors), ("WARN", warns), ("info", info)):
         for x in items:

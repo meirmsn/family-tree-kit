@@ -324,3 +324,106 @@ def people_links(people_md):
 
 def num(i):
     return int(re.sub(r"\D", "", i) or 0)
+
+
+# ------------------------------------------------------------------ note / other-family lint (warn-only)
+# Used by check_ids.py --spec and site/build.py. Keep heuristics simple and family-neutral.
+
+# Person note= text should describe only the person and what the records show — not migration or
+# kit process. Stems, case-insensitive: migrat*, clone*, copied, snapshot*, generated, kit, build*.
+PROCESS_NOTE_RE = re.compile(
+    r"\b(?:migrat\w*|clone\w*|copied|snapshot\w*|generated|kit|build\w*)\b", re.I)
+
+# Sibling / other-child words in notes. Deliberately omits bare "son"/"daughter" so parentage
+# phrases ("Son of …", "Daughter of …") are not counted as extra siblings.
+SIB_CHILD_MENTION_RE = re.compile(
+    r"\b(?:brothers?|sisters?|siblings?|half[-\s]?brothers?|half[-\s]?sisters?|"
+    r"half[-\s]?siblings?|other children)\b", re.I)
+
+_OTHER_FAMILY_GROUPS = ("siblings", "other children")
+
+
+def process_note_warnings(people, relatives=None):
+    """Warn when a PEOPLE or RELATIVES note= looks like process text, not a person summary."""
+    out = []
+    for p in people or []:
+        note = p.get("note") or ""
+        m = PROCESS_NOTE_RE.search(note)
+        if m:
+            out.append(f"spec {p.get('id', '?')}.note: process word {m.group(0)!r} — "
+                       f"notes should describe only the person and what the records show")
+    for key, q in (relatives or {}).items():
+        note = (q or {}).get("note") or ""
+        m = PROCESS_NOTE_RE.search(note)
+        if m:
+            out.append(f"spec RELATIVES[{key!r}].note: process word {m.group(0)!r} — "
+                       f"notes should describe only the person and what the records show")
+    return out
+
+
+def _other_family_link_keys(other_family):
+    """Unique relative keys linked under Siblings… / Other children… groups."""
+    keys = set()
+    for entries in (other_family or {}).values():
+        for group, key, _rel in entries:
+            g = (group or "").strip().lower()
+            if any(g.startswith(prefix) for prefix in _OTHER_FAMILY_GROUPS):
+                keys.add(key)
+    return keys
+
+
+def estimate_named_siblings_children(people_md="", notes=()):
+    """Estimate how many siblings/other children notes and people.md name (simple heuristic).
+
+    - people.md: count relationship lines whose label is sibling/brother/sister/child(ren)/son/daughter
+      (see RELATION_LINE).
+    - notes: count brother/sister/sibling/half-*/"other children" tokens (not bare son/daughter).
+    """
+    n = 0
+    for line in (people_md or "").splitlines():
+        m = RELATION_LINE.match(line)
+        if m and re.match(r"siblings?|brother|sister|children|child|son|daughter", m.group(1), re.I):
+            n += 1
+    for note in notes:
+        if note:
+            n += len(SIB_CHILD_MENTION_RE.findall(note))
+    return n
+
+
+def other_family_warnings(people, relatives=None, other_family=None, people_md=""):
+    """Warn when OTHER_FAMILY / RELATIVES look empty or far thinner than notes/records suggest.
+
+    Heuristic (documented, deliberately simple):
+    - named = estimate_named_siblings_children(people.md relationship lines + PEOPLE/RELATIVES notes).
+    - linked = unique RELATIVES keys attached via OTHER_FAMILY under Siblings / Other children.
+    - Warn when both RELATIVES and OTHER_FAMILY are empty and the fan has a parent generation
+      (len(PEOPLE) >= 3): a direct-line-only migration often leaves siblings off the site.
+    - Warn when RELATIVES is non-empty but OTHER_FAMILY is empty (relatives never wired to panels).
+    - Warn when named >= 2 and linked < named // 2 ("much smaller" than notes suggest).
+    """
+    relatives = relatives or {}
+    other_family = other_family or {}
+    out = []
+    n_people = len(people or [])
+    notes = [(p.get("note") or "") for p in (people or [])]
+    notes += [((q or {}).get("note") or "") for q in relatives.values()]
+    named = estimate_named_siblings_children(people_md or "", notes)
+    linked = _other_family_link_keys(other_family)
+    n_rel = len(relatives)
+    n_of = sum(len(v) for v in other_family.values())
+
+    if n_people >= 3 and n_rel == 0 and n_of == 0:
+        out.append(
+            "OTHER_FAMILY/RELATIVES are empty while the fan has a parent generation — "
+            "records often name siblings and other children; capture them (see "
+            "docs/research-process-lessons.md §9) so the site can show Other family")
+    elif n_rel > 0 and n_of == 0:
+        out.append(
+            f"RELATIVES has {n_rel} entr{'y' if n_rel == 1 else 'ies'} but OTHER_FAMILY is empty — "
+            "wire each relative to a fan person so derive_other_family can show siblings/other children")
+    if named >= 2 and len(linked) < named // 2:
+        out.append(
+            f"OTHER_FAMILY links {len(linked)} sibling/other-child relative(s) but notes/people.md "
+            f"mention siblings/children about {named} time(s) — check that every relative a record "
+            f"names is in RELATIVES and linked from OTHER_FAMILY (lessons §9)")
+    return out
