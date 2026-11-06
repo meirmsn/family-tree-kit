@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- The person panel's **How to read** legend ends with one small muted line: the kit version and the build date, for example `v0.2.17 11/6/26`. Month and day have no leading zeros. There is no product name. The version is read from `VERSION` when the site is built; the date is the builder's local date. Forks that replace the panel keep the line by calling `kitVersionLine()` or by leaving the `{{KIT_VERSION_LINE}}` placeholder in their markup. `VERSION` is unchanged.
+
+
 ## v0.2.17 (2026-11-06)
 - **Name spelling.** The title uses the spelling on the earliest or most official record (a civil or church birth, marriage, or death act outranks an index, a transcription, or a secondary source). A different family spelling is shown in parentheses — `Record Spelling (Family Spelling)` — and kept as a search hint. It never replaces the record. If no record exists yet, the family spelling is the title. Every other documented spelling is listed under **Also recorded as**, each with its source.
 - A suspected same person stays unmerged. The panel says **Possible match**. A merge is only `CANONICAL_ALIASES`, and only after the user says the two records are one person. `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS` record the spellings, the candidates, and the pairs that are not the same person.

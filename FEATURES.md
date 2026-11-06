@@ -27,6 +27,7 @@ Describes the site in `site/` (`build.py`, `pwa.py`, `web/`). The site is a **st
 - **Every name is tappable**, including names and P-numbers inside record texts: opens that person's panel. Off-chart relatives get their own small panel; while open, the fan is dimmed and their on-chart relative is outlined.
 - **Back history stack** (Back button, Alt+←).
 - Tap a non-confirmed value to read its confidence level in words (mobile has no hover titles).
+- The **How to read** legend in that panel ends with one small muted line: the kit version and the build date (`v0.2.17 11/6/26`). The version is read from the kit `VERSION` file; the date is the builder's local date (M/D/YY, no leading zeros). Forks that replace the panel keep it by calling `kitVersionLine()` or leaving the `{{KIT_VERSION_LINE}}` placeholder in their markup.
 
 ### Confidence styling (one renderer used everywhere: panel, tooltip, lists, legend)
 - **confirmed:** plain text.
