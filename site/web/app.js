@@ -51,11 +51,15 @@
     return list.map((p, i) => (i ? `<span class="sep">${esc(p.j !== undefined ? p.j : "; ")}</span>` : "") + claim(p.t, p.c, p.s, withTags)).join("");
   }
   function confKey(compact) {
-    const k = (c, sample) => `<span class="ck" title="${esc(CONF[c])} — ${esc(CONF_HELP[c])}">${cfSpan(sample, c, { noSr: true })}<small>${esc(CONF[c].toLowerCase())}</small></span>`;
+    // Color the label words themselves (no sample dates — those looked like real values).
+    const k = (c, label) => `<span class="ck" title="${esc(CONF[c])} — ${esc(CONF_HELP[c])}">${cfSpan(label, c, { noSr: true })}</span>`;
+    const lore = `<span class="ck" title="${esc(CONF.lore)} — ${esc(CONF_HELP.lore)}">` +
+      `<span class="cf cf-lore" title="${esc(CONF.lore)} — ${esc(CONF_HELP.lore)}">` +
+      `<span class="lore-mk lore-mk-before" aria-hidden="true">lore</span>family lore</span></span>`;
     return `<div class="conf-legend${compact ? " compact" : ""}" aria-label="How confidence is shown">` +
       `<span class="ck-h">How to read values:</span>` +
-      `<span class="ck"><span class="cf cf-confirmed">1912</span><small>confirmed (plain)</small></span>` +
-      k("probable", "1912") + k("possible", "1912") + k("lore", "1912") +
+      `<span class="ck" title="${esc(CONF.confirmed)} — ${esc(CONF_HELP.confirmed)}">${cfSpan("confirmed", "confirmed", { noSr: true })}<small> (plain)</small></span>` +
+      k("probable", "probable") + k("possible", "possible") + lore +
       `<span class="ck ck-src"><span class="stag-demo">S11</span><small>source</small></span></div>`;
   }
 

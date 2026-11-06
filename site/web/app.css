@@ -668,6 +668,7 @@ html.gs-active .top { backdrop-filter: none; -webkit-backdrop-filter: none; back
 .conf-legend .ck { gap: 5px; }
 .conf-legend .ck small { font-size: 11px; color: var(--muted); }
 .conf-legend .cf { font-size: 13px; }
+.conf-legend .lore-mk-before { margin-left: 0; margin-right: 5px; }
 .cfpop {
   position: fixed; z-index: 90; padding: 7px 10px; border-radius: 9px; font-size: 12.5px; line-height: 1.4;
   background: var(--ink); color: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.25); pointer-events: none;

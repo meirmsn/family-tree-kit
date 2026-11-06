@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.13 (2026-11-06)
+- Site confidence legend: color the words themselves (`confirmed` / `probable` / `possible` / `family lore` with the LORE pill) instead of sample date values like "1912", which looked like real profile dates.
+
 ## v0.2.12 (2026-11-05)
 - Research rule (**lessons §9**, `agent/rules.md` §16, worker + migrate/collateral/site-update briefs): record every relationship a record shows (siblings, half-siblings, spouse's parents, related witnesses/informants), not just the direct line; surface them on the site via `OTHER_FAMILY` / `RELATIVES`.
 - `check_ids.py --spec` and `site/build.py` **warn** when `OTHER_FAMILY`/`RELATIVES` are empty or much thinner than siblings/children named in notes or `people.md` (simple mention-count heuristic in `tools/gklib.py`).
