@@ -16,7 +16,8 @@ Warns (does not refuse) when the folder is inside an existing git repository.
 Creates the data files, records/, collateral/, drafts/, correspondence/, .work/, .backups/, a
 .genealogy-project marker (tools never descend into a folder that has one), and site/ with a starter
 people_spec.py and site.config.json (random Cloudflare project name, no secrets; build output and the
-image cache go to the project's own .work/, which is git-ignored). Also seeds
+image cache go to the project's own .work/, which is git-ignored). Writes KIT_VERSION with the
+version from the kit's VERSION file. Also seeds
 PROJECT/.work/private-words.txt with tokens from the home person name (one list per project;
 tools/privacy_grep.py uses that path by default for a project). Does not write the legacy shared
 ~/.config/genealogy-kit/private-words.txt.
@@ -51,11 +52,14 @@ LINES = {{"root": "Home person", "paternal": "Paternal", "maternal": "Maternal",
 FIELDS = {{}}
 OPEN_QUESTIONS = []
 ARCHIVE_REQUESTS = []
+# Sibling links that are not the fan child pointer. Empty until a link is recorded.
+FAMILY_ASSERTIONS = []
+SIBLING_EXCLUSIONS = []
+CANONICAL_ALIASES = {{}}
 # Title spelling: record spelling wins; family spelling in parentheses. See site/SPEC.md.
 NAME_FORMS = {{}}
 POSSIBLE_MATCHES = []
 MATCH_EXCLUSIONS = []
-CANONICAL_ALIASES = {{}}
 '''
 
 
@@ -149,6 +153,9 @@ def main():
         json.dump({"kind": "family-tree-kit project", "created": today,
                    "note": "Tools never descend into a folder with this file. Do not nest projects."}, f, indent=2)
         f.write("\n")
+    kit_version = open(os.path.join(KIT, "VERSION"), encoding="utf-8").read().strip()
+    with open(os.path.join(dst, "KIT_VERSION"), "w", encoding="utf-8") as f:
+        f.write(kit_version + "\n")
     if a.git:
         subprocess.run(["git", "init", "-q", dst], check=True)
     pw = seed_private_words(dst, a.home)

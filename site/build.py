@@ -1222,7 +1222,7 @@ def kit_version(version=None):
 
 
 def kit_version_line(version=None):
-    """Version token for the site footer, e.g. 'v0.2.17'. No product name.
+    """Version token for the site footer, e.g. 'v0.2.19'. No product name.
 
     The footer places this before its existing "Last updated" date. The date stays
     in that sentence's own format; this token is only the version.
