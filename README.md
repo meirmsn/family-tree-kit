@@ -19,56 +19,91 @@ place and record in this repository belongs to an invented example family.
 
 *All names, places and records in these screenshots are invented.*
 
-## Install the private site as an app (PWA)
-The generated site ships a web app manifest, service worker and fan-chart home-screen icons.
-On phone or desktop, open the published URL (behind your login), use the browser’s **Add to Home Screen** / **Install**, and you get a standalone Family Tree app with the circular fan icon.
+## Approach
 
-## What you need
-**A plain chat assistant is not enough.** The agent must have:
-- **persistent files** (research runs over days or weeks, with hundreds of files and scans);
-- a **shell** with Python 3 (+ Pillow), Node.js (npm) and curl;
-- a **browser it can drive** (many archives are JavaScript viewers or block plain HTTP clients);
-- **image reading** (handwritten registers in many languages and scripts);
-- **background / long-running work** and **scheduling** (research passes, reply watch, Access check);
-- **secret storage** (the user's logins and the Cloudflare token);
-- a way to **ask the user** and get approvals.
+This kit exists so a capable agent can run a long genealogy project the same way a careful human
+researcher would: every fact has a source you can open, every link is labelled for how sure it is,
+and nothing personal ever lands in the public repository.
 
-## Quick start
+The method is spelled out in [METHODOLOGY.md](METHODOLOGY.md) and the agent briefs under
+[agent/](agent/). In short:
 
-### Option 1 — Point your Grok Bot at this repo
-Paste this into Grok Bot:
-> Set up genealogy research for my family using the family-tree-kit repository at `<repo URL or path>`.
-> Read AGENT.md and follow it step by step: create a private data folder, save the rules to memory,
-> then interview me one question at a time. Use free sources first, contact no one, and ask me
-> before any login, payment, archive letter or website deploy.
+- **Interview first.** One question at a time. Capture what the family already knows as **family
+  lore** (U-sources), including spelling uncertainty, maiden names, and origin towns.
+- **Cited facts only.** Every claim gets a source ID (S- or U-number) and one of four confidence
+  labels: **confirmed**, **probable**, **possible**, or **family lore**. Labels apply per fact, not
+  only per person.
+- **Free sources first; read the scan.** Indexes are leads. A fact becomes confirmed only after the
+  record image (or an authoritative transcript) is read. Negatives and blocked searches are logged
+  so the next pass does not repeat them.
+- **Record everyone the record shows.** Siblings, half-siblings, a spouse's parents, and related
+  witnesses or informants get their own entries and can appear as "Other family" on the site — not
+  only the direct line.
+- **The user decides.** The agent proposes relationship links and confidence changes; it never
+  applies them alone. Archive letters are drafted by the agent and **sent by the user**.
+- **Append-only research files.** Back up before edits; correct by adding a dated section, never by
+  rewriting history.
 
-Grok Bot runs research passes in background workers, uses its own browser for archive viewers, keeps
-logins in its vault, asks you with choice buttons, writes long reports as Pages, and can run the
-recommended routines.
+### Inspiration
 
-### Option 2 — Any agent with those capabilities
-Give it `AGENT.md` as its instructions. The table at the end of `AGENT.md` maps each Grok Bot term
-(background worker, vault, routine, choice widget, Page) to a generic equivalent (sub-process, secret
-store, cron, numbered question, report file).
+[Anthony Pompliano](https://x.com/APompliano) wrote about setting up a **Genealogist Bot** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
 
-### Try the site locally (no account needed)
+[Anthony Pompliano](https://x.com/APompliano) — [Genealogist Bot (X)](https://x.com/APompliano/status/2116967151537996188)
+
+[![Anthony Pompliano’s public post about using a Genealogist Bot with Grok Bot](docs/inspiration-pompliano.png)](https://x.com/APompliano/status/2116967151537996188)
+
+*Screenshot of [Pompliano](https://x.com/APompliano)’s [public post](https://x.com/APompliano/status/2116967151537996188) (GitHub README does not reliably render live X embeds, so the image is included for the feed view; click through for the original).*
+
+In spite of that — individuals already doing this with Grok Bot — **we created this project so anyone can do it**: the research method, agent instructions, templates, tools, and a private family-tree site kit, not gatekept to one person’s bot.
+
+## What it does
+
+- A full research method for long-running agents: interview, recursive search, evidence handling,
+  collateral / FAN-club work, archive-request drafting, and audit passes.
+- Empty templates and small tools for IDs, sidecars, backups, polite queries, Access checks and a
+  privacy sweep.
+- An optional **private** static site: circular fan chart, person panels with per-fact confidence
+  styling, record lightbox with "why this record matters", fuzzy search, people table, open
+  questions and archive-request status.
+- Confidence shown as colored words in the legend (`confirmed`, `probable`, `possible`, `family
+  lore` with a LORE pill) — no sample dates that look like real profile values.
+- Installable as a PWA (manifest, service worker, fan-chart icons) once the site is published behind
+  a login.
+- A fictional example family only in this repo; real trees live in a private folder the agent
+  creates.
+
+## How it works
+
+Two halves: **research and data**, then **visualization**. The public kit never holds personal data;
+the agent builds a private project folder and the site generator reads that folder.
+
+```mermaid
+flowchart TB
+  subgraph ingest ["1. Data ingestion and processing"]
+    direction TB
+    I[Interview / family lore U-sources] --> S[Record searches on free sources]
+    S --> R[Sources, scans, sidecar files]
+    R --> P[people.md · sources.md · relationships.md]
+    P --> C[ID checks · process-word lint · privacy gates]
+  end
+  subgraph viz ["2. Visualization"]
+    direction TB
+    B["build.py → static fan-chart PWA"] --> D[Deploy behind Cloudflare Access login]
+  end
+  C --> B
 ```
-cd site && npm install && cd ..
-python3 site/build.py                     # builds the fictional example into build/example-site/
-python3 tools/screenshot.py build/example-site docs --require-example   # optional
-python3 tools/screenshot_interactive.py build/example-site docs [--tip-only|--evidence-only]   # optional; panel + hover tip, desktop evidence (mobile shots unless a flag); needs `pip install playwright` + Chrome
-python3 -m unittest discover -s site/tests
-python3 -m unittest discover -s tools/tests
-```
 
-## How it fits together
-```
-family-tree-kit/  (this repo, public, no personal data)       ~/genealogy-trees/<tree>/  (PRIVATE, created by the agent)
-  AGENT.md  METHODOLOGY.md  agent/  templates/  tools/  ──►    people.md sources.md records/ collateral/ drafts/ …
-  site/build.py  site/web/  ◄── reads ───────────────────────  site/people_spec.py  site/site.config.json
-        │
-        └── builds a static site ──► Cloudflare Pages project with a random name, behind Cloudflare Access
-```
+**1. Data ingestion and processing.** The agent interviews, searches free archives and indexes,
+downloads scans, writes append-only research files and record sidecars, and keeps collateral
+relatives in their own folder. `tools/check_ids.py` (and the site build) warn when other-family
+lists look thin or when site-facing notes talk about migration/build process instead of the person.
+Local privacy hooks and a name-blind public CI check try to keep personal data out of this repo
+before anything is shared.
+
+**2. Visualization.** `site/build.py` reads the private curated spec and research files, re-encodes
+record images, vendors D3 and Fuse.js, and writes a static PWA. Deploy is opt-in: Access must
+redirect to a login **before** any real data is uploaded, and the deploy script re-checks afterwards.
+See [FEATURES.md](FEATURES.md) and [SECURITY.md](SECURITY.md).
 
 | Path | What |
 |---|---|
@@ -81,32 +116,126 @@ family-tree-kit/  (this repo, public, no personal data)       ~/genealogy-trees/
 | [tools/](tools/) | project setup, backups, ID checks, sidecars and indexes, scans, polite queries, Access check, privacy sweep |
 | [site/](site/) | the generator (`build.py`, `pwa.py`, `web/`), config, the fictional example, tests |
 
-## Privacy promise
-- Research data, record images, the curated spec and the site config live **only** in the private
-  folder. The repo ships an invented family.
-- The site is deployed only after Cloudflare Access is **verified** (302 to your Access login) on
-  production and preview URLs; the deploy re-checks afterwards.
-- No surnames in the project name, domain, page title or app name; strict publication defaults
-  for possibly-living people; no third-party scripts; not indexable.
+## Privacy
+
+Personal data belongs only in the private project folder and, if you deploy, behind a login. This
+repository ships an invented family. Several **safeguards** reduce the chance that private names or
+secrets leak into the public kit — they are filters and review steps, **not a guarantee**:
+
+- Research files, record images, the curated spec and the site config live **only** in the private
+  folder. Screenshots in this README are of the fictional example only.
+- Pattern-based local sweeps (`privacy_grep.py` with a per-project private word list) and a
+  **name-blind** public CI mode check for secret shapes, forbidden paths and non-example images.
+  Pattern matching can miss variants; the public check never sees your real names.
+- Pre-commit / pre-push hooks (local, never committed) and `--public-ci` on pull requests are
+  backstops. A human still reviews every PR before merge — especially screenshots.
+- The site deploys only after Cloudflare Access is verified (302 to your Access login) on production
+  and preview URLs; the deploy re-checks afterwards. No surnames in the project name, domain, page
+  title or app name; strict publication defaults for possibly-living people; no third-party scripts;
+  not indexable.
 - The agent contacts no one: it drafts archive letters, **you** send them.
 
-## Inspiration
+Treat these as layers that lower risk. Always assume a check can miss something; review before
+anything goes public. Details: [SECURITY.md](SECURITY.md).
 
-[Anthony Pompliano](https://x.com/APompliano) wrote about setting up a **Genealogist Bot** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
+## Build log
 
-[Anthony Pompliano](https://x.com/APompliano) — [Genealogist Bot (X)](https://x.com/APompliano/status/2116967151537996188)
+### Research and data
+- **v0.1.0** — first kit: method, agent instructions, templates, tools, fictional example, migration feedback from earlier research work.
+- **v0.2.0–v0.2.1** — research-process lessons (backups, negatives, indexes-first, propose-before-changing links); confidence qualifiers; home-person merge and draft renumbering; private-words list required.
+- **v0.2.2–v0.2.3** — safer draft renumbering; privacy whole-word + simple suffixes; `--strict` required before sharing.
+- **v0.2.10** — multi-layer privacy filters: `GENEALOGY_PRIVATE_WORDS`, pre-commit/pre-push hooks, name-blind `--public-ci`, public CI workflow.
+- **v0.2.12** — record every relationship a record shows; warn when `OTHER_FAMILY` / `RELATIVES` look empty; warn on process wording in person notes.
+- **v0.2.14** — same process-word lint on record sidecars: "Why this record matters", Notes, Summary.
 
-[![Anthony Pompliano’s public post about using a Genealogist Bot with Grok Bot](docs/inspiration-pompliano.png)](https://x.com/APompliano/status/2116967151537996188)
+### Site and docs
+- **v0.2.4–v0.2.6** — README screenshots from the fictional example (including interactive panel, evidence and hover-tip shots).
+- **v0.2.7–v0.2.9** — credits and thanks; Inspiration (Pompliano); note of a future distributed-archive idea (not implemented).
+- **v0.2.11** — first public release of the kit.
+- **v0.2.13** — confidence legend colors the words themselves; no sample date values like "1912".
 
-*Screenshot of [Pompliano](https://x.com/APompliano)’s [public post](https://x.com/APompliano/status/2116967151537996188) (GitHub README does not reliably render live X embeds, so the image is included for the feed view; click through for the original).*
+Full notes: [CHANGELOG.md](CHANGELOG.md).
 
-In spite of that — individuals already doing this with Grok Bot — **we created this project so anyone can do it**: the research method, agent instructions, templates, tools, and a private family-tree site kit, not gatekept to one person’s bot.
+## Limitations
 
-### A future idea (not in this kit today)
+- **No linking across trees.** Each family tree is its own private project folder. `new_project.py`
+  creates sibling folders and refuses to nest one tree inside another; there is no tool to connect,
+  merge or sync two trees (shared ancestors, shared people IDs, or a combined site).
+- **No GEDCOM import or export.** The data model is the kit's Markdown / sidecar / `people_spec.py`
+  files. There is no GEDCOM reader or writer in this repository.
+- **Depends on free online sources first.** Many archives need a login, a captcha, or an off-line
+  request. The agent does not bypass walls; those paths stay on a "needs the user" list or become
+  draft archive letters for you to send.
+- **Agent output still needs a human.** Relationship links and confidence changes are proposals until
+  you approve them. Pull requests are reviewed by a person before merge.
+- **Privacy checks are pattern-based.** The local word list catches listed forms (plus a few simple
+  suffixes); it does not stem or understand context. Public CI is deliberately name-blind. Both can
+  miss things.
+- **Fan chart shows direct ancestors only.** Collateral and other relatives appear in person panels
+  ("Other family"), not as rings on the chart.
+- **Single protected site per tree.** The intended deploy is one Cloudflare Pages project behind
+  Access for that tree. GitHub Pages and other public static hosts are not suitable.
+- **Handwriting and indexes remain hard.** Misreadings and weak index hits are expected; the method
+  treats indexes as leads and keeps reading corrections append-only.
 
-Separately, we would like to see a **distributed volunteer / distributed-compute archive project**: people (and their agents) could **optionally** contribute lightweight **text findings**, proofs, and links — and, if images are involved at all, only **minimal processed record snippets** — so others can reuse hard-won archive leads without reinventing the search. **Personal trees would not live in a central store.** This kit does **not** implement that; it remains a local/private research + site kit. Contributions, if any such network appears later, would be opt-in and separate from your private tree folder.
+## Run it
+
+### What you need
+
+**A plain chat assistant is not enough.** The agent must have:
+
+- **persistent files** (research runs over days or weeks, with hundreds of files and scans);
+- a **shell** with Python 3 (+ Pillow), Node.js (npm) and curl;
+- a **browser it can drive** (many archives are JavaScript viewers or block plain HTTP clients);
+- **image reading** (handwritten registers in many languages and scripts);
+- **background / long-running work** and **scheduling** (research passes, reply watch, Access check);
+- **secret storage** (the user's logins and the Cloudflare token);
+- a way to **ask the user** and get approvals.
+
+### Option 1 — Point your Grok Bot at this repo
+
+Paste this into Grok Bot:
+
+> Set up genealogy research for my family using the family-tree-kit repository at `<repo URL or path>`.
+> Read AGENT.md and follow it step by step: create a private data folder, save the rules to memory,
+> then interview me one question at a time. Use free sources first, contact no one, and ask me
+> before any login, payment, archive letter or website deploy.
+
+Grok Bot runs research passes in background workers, uses its own browser for archive viewers, keeps
+logins in its vault, asks you with choice buttons, writes long reports as Pages, and can run the
+recommended routines.
+
+### Option 2 — Any agent with those capabilities
+
+Give it `AGENT.md` as its instructions. The table at the end of `AGENT.md` maps each Grok Bot term
+(background worker, vault, routine, choice widget, Page) to a generic equivalent (sub-process, secret
+store, cron, numbered question, report file).
+
+### Try the site locally (no account needed)
+
+```
+cd site && npm install && cd ..
+python3 site/build.py                     # builds the fictional example into build/example-site/
+python3 tools/screenshot.py build/example-site docs --require-example   # optional
+python3 tools/screenshot_interactive.py build/example-site docs [--tip-only|--evidence-only]   # optional; panel + hover tip, desktop evidence (mobile shots unless a flag); needs `pip install playwright` + Chrome
+python3 -m unittest discover -s site/tests
+python3 -m unittest discover -s tools/tests
+```
+
+### Install the private site as an app (PWA)
+
+Once you have published a tree behind your login, open the URL on phone or desktop, use the
+browser’s **Add to Home Screen** / **Install**, and you get a standalone Family Tree app with the
+circular fan icon. The generator ships the manifest, service worker and icons.
+
+## Licence
+
+MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
+D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
+Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTICE).
 
 ## Credits and thanks
+
 This kit stands on the shoulders of giants. With real gratitude to the people who built and maintain the work it relies on:
 
 - **[D3](https://d3js.org/)** ([GitHub](https://github.com/d3/d3)) — the heart of the circular fan chart (`site/web/fan.js`: hierarchy, partition, arc, zoom, colour interpolation). D3 was created by [Mike Bostock](https://bost.ocks.org/mike/) and is maintained with [Philippe Rivière](https://github.com/Fil) and [many contributors](https://github.com/d3/d3/graphs/contributors). Thank you — the chart simply would not exist without it. ISC licence; copied into each build's `vendor/`.
@@ -118,7 +247,6 @@ Optional screenshot tooling for the fictional example only: [Playwright](https:/
 
 The data structure, person panel and record lightbox were designed for this kit; the repo does not document borrowing them from another family-tree product, so none is credited here. If you recognise an influence we missed, please tell us and we will gladly add it.
 
-## Licence
-MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
-D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
-Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTICE).
+## A future idea (not in this kit today)
+
+Separately, we would like to see a **distributed volunteer / distributed-compute archive project**: people (and their agents) could **optionally** contribute lightweight **text findings**, proofs, and links — and, if images are involved at all, only **minimal processed record snippets** — so others can reuse hard-won archive leads without reinventing the search. **Personal trees would not live in a central store.** This kit does **not** implement that; it remains a local/private research + site kit. Contributions, if any such network appears later, would be opt-in and separate from your private tree folder.
