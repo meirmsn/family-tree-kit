@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.16 (2026-11-06)
+- **All known siblings** on every person panel, on the chart and off it. The list is the union of shared recorded parents and explicit sibling or half-sibling links, deduplicated and reciprocal, and each link keeps its own confidence and sources (not the other person's identity confidence). Fan positions are unchanged. Optional `FAMILY_ASSERTIONS`, `SIBLING_EXCLUSIONS`, and `CANONICAL_ALIASES` in the spec cover cross-chart siblings, unresolved identities, and aliases without guessing from names.
+- **Recording rule** for anyone building a tree: when a person is recorded, record every known sibling and their parents. Encode the relationship through shared parents, or through an explicit sibling list with a citation and a confidence on that link. Every person's page lists all known siblings.
+- `tools/check_ids.py --spec` and the site build warn when research files or the spec name a sibling or a child of a couple who is not encoded as a linked person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than the data records.
+
+
 ## v0.2.15 (2026-11-06)
 - Process-word lint also flags **agent bookkeeping** in site-facing source titles, summaries and notes: phrases like `parent agent`, `owner message`, message ids (`[pt12u]` / `[t12u]`), `relayed by`, `the user`, `Pass N`, `headed browser`, `sidecar`, `worker brief`. Covers sidecar front-matter titles, Why/Notes/Summary sections, and `sources.md` entries. Site-facing text must describe the record and the person, never the research process or the agent conversation.
 

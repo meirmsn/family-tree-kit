@@ -340,7 +340,7 @@ SIB_CHILD_MENTION_RE = re.compile(
     r"\b(?:brothers?|sisters?|siblings?|half[-\s]?brothers?|half[-\s]?sisters?|"
     r"half[-\s]?siblings?|other children)\b", re.I)
 
-_OTHER_FAMILY_GROUPS = ("siblings", "other children")
+_OTHER_FAMILY_GROUPS = ("siblings", "half-siblings", "half siblings", "other children")
 
 
 # Agent / research-conversation bookkeeping that must never appear in site-facing titles,
@@ -425,7 +425,8 @@ def _other_family_link_keys(other_family):
     """Unique relative keys linked under Siblings… / Other children… groups."""
     keys = set()
     for entries in (other_family or {}).values():
-        for group, key, _rel in entries:
+        for entry in entries:
+            group, key = entry[0], entry[1]
             g = (group or "").strip().lower()
             if any(g.startswith(prefix) for prefix in _OTHER_FAMILY_GROUPS):
                 keys.add(key)
@@ -487,3 +488,14 @@ def other_family_warnings(people, relatives=None, other_family=None, people_md="
             f"mention siblings/children about {named} time(s) — check that every relative a record "
             f"names is in RELATIVES and linked from OTHER_FAMILY (lessons §9)")
     return out
+
+
+def sibling_coverage_warnings(*args, **kwargs):
+    """Warn when named siblings or children of a couple are not linked, a sibling link is
+    not reciprocal, or a panel would show fewer siblings than the files record.
+
+    Same implementation the site uses to build the All known siblings lists
+    (tools/siblings.py). Warn-only.
+    """
+    from siblings import sibling_coverage_warnings as _warn
+    return _warn(*args, **kwargs)

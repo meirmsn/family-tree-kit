@@ -35,6 +35,12 @@ PSEUDO_SOURCES: U-numbers (family testimony).
 OPEN_QUESTIONS: the few key questions to show (the full open-questions.md stays private).
 ARCHIVE_REQUESTS: (code, archive, what, status) rows.
 RELATIVES + OTHER_FAMILY: relatives not on the fan, attached to fan people in "Other family" panels.
+FAMILY_ASSERTIONS: optional parent/sibling edges that are not the fan `child` pointer (two people
+  already on the chart, or an edge confidence that is not the person's identity confidence).
+  Each dict is type "parent" (parent, child, c, s, label) or "sibling" / "half-sibling"
+  (a, b, c, s, label). They do not move fan arcs and do not copy a chart person into RELATIVES.
+SIBLING_EXCLUSIONS: optional unordered id pairs that must not be shown as siblings (unresolved
+  identities). Not inferred from names. CANONICAL_ALIASES: optional alias id → canonical id.
 GAZETTEER, PLACE_ALIASES: search places and spelling variants (keys folded: lower case, no accents).
 SOURCE_TITLES: hand-written titles; UNLINKED_SOURCES: shown although nobody cites them.
 RESTRICTED_SOURCES {S: reason}: never published. PUBLIC_RECENT_SOURCES: recent records allowed in strict mode.
@@ -198,6 +204,16 @@ OTHER_FAMILY = {
     "p12": [("Other children", "benjamin", "Son")],
     "p2": [("Siblings", "nora", "Sister")],
 }
+
+# Not the fan `child` pointer. Empty in this example: shared parents and OTHER_FAMILY already
+# encode the fictional sibling links. See site/SPEC.md.
+FAMILY_ASSERTIONS = []
+
+# Unordered pairs that must not be called siblings (two records that might be the same person).
+SIBLING_EXCLUSIONS = []
+
+# alias id → canonical id. Collapsed before sibling linking.
+CANONICAL_ALIASES = {}
 
 GAZETTEER = {"Kestrava", "Brindlow", "Orvenna", "Velmar", "Ardenia", "Port Sallow", "Haverlow", "Saltreach"}
 PLACE_ALIASES = {"kestrawa": "Kestrava", "port salow": "Port Sallow"}

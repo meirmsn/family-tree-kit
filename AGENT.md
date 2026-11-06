@@ -67,6 +67,10 @@ origin towns, migration, documents at home, lore, siblings. Record every answer 
 without a time keeps just the date and says "time not recorded"). Fill
 `LINES.md` (the four grandparent lines) as you go. Offer `QUESTIONS_FOR_FAMILY.md` — a question list
 for elders, in the family's language — at the end.
+- **Siblings.** When you record any person, record every known sibling and both parents of those
+  siblings. Encode each sibling relationship through shared parents, or through an explicit sibling
+  list that carries its own citation and confidence. Do not leave a sibling only in a prose aside.
+  On the site, every person's page — on the chart and off it — lists all known siblings.
 
 ## Step 4 — First research pass in a background worker
 - Write the brief from `agent/WORKER_BRIEF.md` + `agent/briefs/first-pass.md`: project path, folders
@@ -116,7 +120,12 @@ Only if the user wants it. Walk them through `SECURITY.md` §3, one step at a ti
 one-time PIN) and tells you the team domain; put it in the config.
 6. `--check-access` must show 302 → `<team>.cloudflareaccess.com` for every URL.
 7. Edit `site/people_spec.py` (curated direct line; schema `site/SPEC.md`; an ancestor who appears
-twice — pedigree collapse — gets `child=[first, second]`), build, look at it
+twice — pedigree collapse — gets `child=[first, second]`). Sibling links are not only an Other
+family group: shared parents and explicit sibling lists (with a citation and a confidence on that
+link) both feed **All known siblings** on every on-chart person and every off-chart relative.
+`check_ids.py --spec` warns when a named sibling or a child of a couple is not encoded as a linked
+person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than the
+files record. Build, look at it
 locally, then `--deploy` (pre-check → upload → post-check). Log the deployment id and checks.
 Never put a surname in the project name, domain, title or app name.
 

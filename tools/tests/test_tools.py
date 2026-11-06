@@ -637,6 +637,72 @@ class SpecOtherFamilyAndNotes(unittest.TestCase):
         self.assertRegex(out, r"parent agent|the user|Pass 4|owner message|relayed by|headed browser|\[pt12u\]")
 
 
+class SiblingCoverage(unittest.TestCase):
+    """Fictional fixtures: named siblings and children of a couple must be linked on panels."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.p = new_project(os.path.join(self.tmp, "t"))
+        write(os.path.join(self.p, "people.md"),
+              "# People\n\n## P1 Rowan Ashdown\n- Born 1900 (S1, confirmed)\n"
+              "- Sister: Ida Ashdown (S1, confirmed)\n\n"
+              "## P2 Daniel Ashdown\n- Father of P1 (S1, confirmed)\n\n"
+              "## P3 Miriam Corvell\n- Mother of P1 (S1, confirmed)\n\n"
+              "## P4 Mara Quill\n- Born 1930 (S1, possible)\n")
+        write(os.path.join(self.p, "sources.md"),
+              "# Sources\n\n- S1 — **A record** — x (confirmed)\n- U1 — **Interview** — y\n")
+        write(os.path.join(self.p, "relationships.md"),
+              "# Relationships\n- P2 and P3 are the parents of P1 (S1, confirmed)\n"
+              "- P2 and P3 are the parents of P4 (S1, confirmed)\n")
+
+    def _spec(self, body):
+        path = os.path.join(self.p, "site", "people_spec.py")
+        write(path, body)
+        return path
+
+    def test_unencoded_sibling_child_reciprocal_and_fewer(self):
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan Ashdown', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person.'),\n"
+            " dict(id='p2', pid='P2', name='Daniel Ashdown', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1']),\n"
+            " dict(id='p3', pid='P3', name='Miriam Corvell', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nPSEUDO_SOURCES = {'U1': {}}\n"
+            "RELATIVES = {'ida': dict(name='Ida Ashdown', conf='confirmed', src=['S1'],"
+            " note='Birth act only.')}\n"
+            "OTHER_FAMILY = {}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)
+        self.assertIn("not encoded as a linked person", out)
+        self.assertIn("P4", out)
+        self.assertIn("is not reciprocal", out)
+        self.assertIn("panel would show fewer siblings", out)
+
+    def test_linked_siblings_do_not_warn(self):
+        write(os.path.join(self.p, "relationships.md"),
+              "# Relationships\n- P2 and P3 are the parents of P1 (S1, confirmed)\n")
+        spec = self._spec(
+            "PEOPLE = [\n"
+            " dict(id='p1', pid='P1', name='Rowan Ashdown', sex='F', child=None, line='root',"
+            " conf='confirmed', src=['U1'], note='Home person.'),\n"
+            " dict(id='p2', pid='P2', name='Daniel Ashdown', sex='M', child='p1', line='paternal',"
+            " conf='confirmed', src=['S1'], note='Father of the home person.'),\n"
+            " dict(id='p3', pid='P3', name='Miriam Corvell', sex='F', child='p1', line='maternal',"
+            " conf='confirmed', src=['S1']),\n"
+            "]\nFIELDS = {'p2': dict(link='confirmed|S1'), 'p3': dict(link='confirmed|S1')}\n"
+            "PSEUDO_SOURCES = {'U1': {}}\n"
+            "RELATIVES = {'ida': dict(name='Ida Ashdown', conf='confirmed', src=['S1'],"
+            " note='Sister of Rowan Ashdown.')}\n"
+            "OTHER_FAMILY = {'p1': [('Siblings', 'ida', 'Sister')]}\n")
+        code, out = run("check_ids.py", self.p, "--spec", spec)
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("not encoded as a linked person", out)
+        self.assertNotIn("is not reciprocal", out)
+        self.assertNotIn("panel would show fewer siblings", out)
+
+
 class FreshProject(unittest.TestCase):
     def test_check_ids_clean_on_brand_new_project(self):
         tmp = tempfile.mkdtemp()

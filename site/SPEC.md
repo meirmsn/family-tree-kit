@@ -18,7 +18,10 @@ mismatch.
 | `OPEN_QUESTIONS` | list of str | the few key questions shown on the site |
 | `ARCHIVE_REQUESTS` | list of tuples | `(code, archive, what, status)` |
 | `RELATIVES` | dict | off-chart relatives: `name, conf, src, by, dead, years, born, died, places, note, pid, name_only` |
-| `OTHER_FAMILY` | dict | fan id → `[(group, relative key, relationship label)]` |
+| `OTHER_FAMILY` | dict | fan id → `[(group, relative key, relationship label)]`; optional 4th slot `"conf\|S1"` or `{c, s, label}` is that link's evidence |
+| `FAMILY_ASSERTIONS` | list | optional edges that are not the fan `child` pointer: parent, sibling, half-sibling (see below) |
+| `SIBLING_EXCLUSIONS` | list | optional unordered id pairs that must not be shown as siblings |
+| `CANONICAL_ALIASES` | dict | optional alias id → canonical id, applied before sibling linking |
 | `GAZETTEER`, `PLACE_ALIASES` | set, dict | search places; aliases keyed by folded spelling (lower case, no accents, ł→l) |
 | `SOURCE_TITLES` | dict | hand-written titles where the parse of sources.md is messy |
 | `UNLINKED_SOURCES` | list | sources shown although nobody cites them |
@@ -26,7 +29,21 @@ mismatch.
 | `PUBLIC_RECENT_SOURCES` | set | strict mode: recent records the family allows |
 | `FICTIONAL_EXAMPLE` | bool | only in the example (lets `tools/screenshot.py --require-example` tell them apart) |
 
-> `OTHER_FAMILY` auto-wiring: a relative listed under a fan person's `Siblings…` group is also added to each of that person's on-fan parents as `Other children` (Brother→Son, Sister→Daughter, qualifiers kept) unless the parent already lists that key. Half-siblings are not propagated. The build prints every derived entry. Confidence/sources stay on `RELATIVES`.
+> `OTHER_FAMILY` auto-wiring: a relative listed under a fan person's `Siblings…` group is also added to each of that person's on-fan parents as `Other children` (Brother→Son, Sister→Daughter, qualifiers kept) unless the parent already lists that key. Half-siblings are not propagated. The build prints every derived entry. That copy is presentation only. The sibling graph does **not** treat it as parentage. Confidence/sources stay on `RELATIVES`.
+
+## All known siblings
+
+Every emitted chart person and off-chart relative has `siblings`: a list of `{id, c, s, kind}` (empty when there are none). The same list is what the panel heading **All known siblings** renders, for people on the chart and for relatives off it. `c` is the **link's** confidence, not the other person's identity confidence. `kind` keeps an explicit label such as `Sister (probable)` or `Half-brother`. Sources on the edge are the ones that support that link.
+
+The list is built after `build_people` / `build_relatives`, without moving anyone on the fan:
+
+- Fan `parents` edges (the parent's `link` / `link_<child>`, not the child's identity confidence) and curated `Children` / `Other children` rows.
+- Explicit `Siblings` / `Half-siblings` rows, in both directions. A 4th tuple slot `"probable|S3"` or `{c, s, label}` is the edge's own evidence; otherwise the relative record's confidence is used, never the other person's.
+- `FAMILY_ASSERTIONS`: `{"type": "parent", "parent", "child", "c", "s", "label"}` or `{"type": "sibling"|"half-sibling", "a", "b", "c", "s", "label"}`. These are not the fan `child` pointer. A half-sibling assertion does not copy both parents and is not treated as transitive.
+- Two shared parents → kind `Sibling`. One shared parent → `Sibling (shared parent)` unless an explicit half-sibling label already won. Explicit labels beat derived ones in either confidence direction. Several explicit assertions keep the weaker confidence and the union of their sources only.
+- `SIBLING_EXCLUSIONS`: pairs that must not be siblings. `CANONICAL_ALIASES`: alias id → canonical id, applied before linking. Neither is guessed from names or notes.
+
+`tools/check_ids.py --spec` and the site build warn when a sibling or a child of a couple named in the research files or the spec is not encoded as a linked person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than those records. Excluded and aliased pairs are not missing siblings.
 > `check_ids.py --spec` and the build warn (not fail) when `OTHER_FAMILY`/`RELATIVES` are empty or
 > much thinner than siblings/children named in notes or `people.md`, and when a `note=` or a
 > record sidecar's **Why this record matters** / Notes / Summary contains process stems

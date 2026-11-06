@@ -68,8 +68,9 @@ facts are at most **probable**, usually **possible**, until a record is found.
    Fix every error before reporting. Fact lines marked `← needs label` still need a real label.
 7. **Collateral** (siblings, cousins…) only after the direct line is migrated, in a separate pass
    (`collateral-pass.md`). Do **not** stop at a direct-line-only site: every sibling or other child a
-   migrated record already names should get a `RELATIVES` entry and an `OTHER_FAMILY` link so the
-   site shows them (lessons §9). A full migration may take several passes; say which pass covers what.
+   migrated record already names should get a person entry, their parents, and a `RELATIVES` /
+   `OTHER_FAMILY` link (or shared parents / `FAMILY_ASSERTIONS` when both people are on the chart)
+   so every panel lists all known siblings (lessons §9). A full migration may take several passes; say which pass covers what.
 
 ## 5. Testimony without a time
 The kit dates U-numbers to the minute. Old notes often give only a date and a speaker

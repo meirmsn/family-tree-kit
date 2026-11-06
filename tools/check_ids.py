@@ -29,7 +29,10 @@ Checks
   RELATIVES `note=` must not contain process stems (migrat/clone/copied/snapshot/generated/kit/build);
   record sidecar "Why this record matters" / Notes / Summary use the same stems;
   OTHER_FAMILY/RELATIVES should not be empty or much thinner than siblings/children named in notes or
-  people.md (see docs/research-process-lessons.md §9 and tools/gklib.py).
+  people.md (see docs/research-process-lessons.md §9 and tools/gklib.py). Sibling coverage (warnings):
+  a sibling or child of a couple named in the research files or the spec is not encoded as a linked
+  person; a sibling link is not reciprocal; a person's panel would show fewer siblings than the
+  data records (tools/siblings.py).
 Exit code 1 if any ERROR (with --strict, warnings count too).
 """
 import argparse
@@ -42,7 +45,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gklib import (DERIVED, ID_RE, TRANSLATION_STATUSES, UNUSED_LINE, body_sections, declared_unused,  # noqa: E402
                    enclosing_project, front_matter, is_placeholder, num, other_family_warnings,
-                   process_note_warnings, process_sidecar_warnings, process_source_text_warnings, project_files, read, sidecars, source_entries, strip_comments)
+                   process_note_warnings, process_sidecar_warnings, process_source_text_warnings, project_files, read, sidecars, sibling_coverage_warnings, source_entries, strip_comments)
 
 
 
@@ -75,7 +78,7 @@ def spec_children(p):
     return list(c) if isinstance(c, (list, tuple)) else [c]
 
 
-def check_spec(path, defined, errors, warns, info, people_md=""):
+def check_spec(path, defined, errors, warns, info, people_md="", project=None):
     m = importlib.util.spec_from_file_location("people_spec", path)
     spec = importlib.util.module_from_spec(m)
     m.loader.exec_module(spec)
@@ -145,6 +148,23 @@ def check_spec(path, defined, errors, warns, info, people_md=""):
     for w in process_note_warnings(spec.PEOPLE, relatives):
         warns.append(w)
     for w in other_family_warnings(spec.PEOPLE, relatives, other_family, people_md):
+        warns.append(w)
+    relationships_md = ""
+    collateral_texts = []
+    if project:
+        rel_path = os.path.join(project, "relationships.md")
+        if os.path.isfile(rel_path):
+            relationships_md = read(rel_path)
+        for cf in sorted(glob.glob(os.path.join(project, "collateral", "*.md"))):
+            collateral_texts.append(read(cf))
+    known = set(defined.get("S") or ()) | set(defined.get("U") or ()) | set(getattr(spec, "PSEUDO_SOURCES", {}) or {})
+    for w in sibling_coverage_warnings(
+            spec.PEOPLE, relatives, other_family, people_md=people_md, relationships_md=relationships_md,
+            family_assertions=getattr(spec, "FAMILY_ASSERTIONS", []),
+            exclusions=getattr(spec, "SIBLING_EXCLUSIONS", []),
+            aliases=getattr(spec, "CANONICAL_ALIASES", {}),
+            fields=getattr(spec, "FIELDS", {}), known_sources=known,
+            collateral_texts=collateral_texts):
         warns.append(w)
 
 
@@ -263,7 +283,7 @@ def main():
         warns.append(w)
 
     if a.spec:
-        check_spec(a.spec, defined, errors, warns, info, people_md=people_md)
+        check_spec(a.spec, defined, errors, warns, info, people_md=people_md, project=P)
 
     for label, items in (("ERROR", errors), ("WARN", warns), ("info", info)):
         for x in items:

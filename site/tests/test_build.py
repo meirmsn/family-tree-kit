@@ -109,6 +109,47 @@ class BuildExample(unittest.TestCase):
         n = sum(1 for s in self.data["sources"].values() if s.get("transcription"))
         self.assertEqual(n, 4)
 
+    def test_all_known_siblings_on_example(self):
+        """Fictional example: every panel has a sibling list; shared parents and explicit lists meet."""
+        by = {p["id"]: p for p in self.data["people"]}
+        rels = self.data["relatives"]
+        for person in list(self.data["people"]) + list(rels.values()):
+            self.assertIn("siblings", person)
+            ids = [e["id"] for e in person["siblings"]]
+            self.assertEqual(ids, sorted(set(ids)))
+            self.assertNotIn(person["id"], ids)
+            for e in person["siblings"]:
+                self.assertEqual(set(e), {"id", "c", "s", "kind"})
+        # Tomas and Ida: explicit sister link, not Tomas's own identity field.
+        ida = by["p4"]["siblings"]
+        self.assertEqual([e["id"] for e in ida], ["r-ida"])
+        self.assertEqual(ida[0]["kind"], "Sister")
+        self.assertEqual(ida[0]["c"], "confirmed")
+        self.assertEqual(rels["r-ida"]["siblings"][0]["id"], "p4")
+        self.assertEqual(rels["r-ida"]["siblings"][0]["c"], ida[0]["c"])
+        # Lena (confirmed) and Dora (probable) share two parents; the link stays probable.
+        lena = next(e for e in by["p9"]["siblings"] if e["id"] == "p19")
+        dora = next(e for e in by["p19"]["siblings"] if e["id"] == "p9")
+        self.assertEqual(lena["c"], "probable")
+        self.assertEqual(dora, {**lena, "id": "p9"})
+        # Nora is name-only in strict mode; the edge does not carry her hidden note or years.
+        nora_edge = next(e for e in by["p2"]["siblings"] if e["id"] == "r-nora")
+        self.assertEqual(nora_edge["c"], "lore")
+        self.assertTrue(rels["r-nora"]["nameOnly"])
+        self.assertNotIn("note", rels["r-nora"])
+        self.assertNotIn("years", rels["r-nora"])
+        # A spouse is not a sibling. Daniel's sister is not also his child.
+        self.assertNotIn("p5", [e["id"] for e in by["p4"]["siblings"]])
+        self.assertNotIn("r-nora", [e["id"] for e in by["p1"]["siblings"]])
+        self.assertEqual(by["p1"]["siblings"], [])
+        js = open(os.path.join(self.out, "assets", "app.js"), encoding="utf-8").read()
+        self.assertIn("All known siblings", js)
+        self.assertGreaterEqual(js.count("siblingsSection("), 3)
+        # Sibling citations are visible from the chart person's sources.
+        cited = self.data["sources"]["S3"]["citedBy"]
+        self.assertTrue(any(c["id"] == "p4" and "sibling" in c["what"] for c in cited))
+        self.assertTrue(any(c["id"] == "r-ida" and "sibling" in c["what"] for c in cited))
+
 
 class CollapseErrors(unittest.TestCase):
     def test_cycle_and_bad_child_refused(self):

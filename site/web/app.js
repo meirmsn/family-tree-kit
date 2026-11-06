@@ -346,9 +346,37 @@
       </button>${conf ? tags(conf.s) : ""}</li>`;
   }
 
+  function isSiblingGroup(name) {
+    return /^(?:half[-\s])?siblings\b/i.test(String(name || "").trim());
+  }
+  // Years already withheld for name-only people. Never show a hidden date here.
+  function permittedYears(dest) {
+    if (!dest || dest.nameOnly) return "";
+    if (BY.has(dest.id)) return yearsLabel(dest);
+    return dest.years || "";
+  }
+  // One sibling block for chart people and off-chart relatives. Confidence is the
+  // edge's evidence, not the destination person's identity confidence.
+  function siblingsSection(q) {
+    const rows = (q.siblings || []).map((e) => {
+      const dest = BY.get(e.id) || REL[e.id];
+      if (!dest) return "";
+      const c = e.c;
+      const qual = e.kind || "";
+      const yrs = permittedYears(dest);
+      const label = `${dest.name}${qual ? ", " + qual : ""} (${CONF[baseConf(c)] || c})`;
+      return `<li><button type="button" class="rel" data-goto="${esc(e.id)}" aria-label="${esc(label)}. Open">
+        <span class="rel-main">${cfSpan(dest.name, c)}${qual ? `<span class="rel-sub">${esc(qual)}</span>` : ""}</span>
+        <span class="yrs">${esc(yrs)}</span></button>${tags(e.s || [])}</li>`;
+    }).join("");
+    if (!rows) return "";
+    return `<h4>All known siblings</h4><ul class="fam sibs">${rows}</ul>`;
+  }
+
   function otherFamily(p) {
-    if (!p.other || !p.other.length) return "";
-    const groups = p.other.map((g) => {
+    const groupsIn = (p.other || []).filter((g) => !isSiblingGroup(g.group));
+    if (!groupsIn.length) return "";
+    const groups = groupsIn.map((g) => {
       const items = g.items.map((q) => {
         const c = q.conf;
         const lore = c === "lore" ? `<span class="lore-mk" aria-hidden="true">lore</span>` : "";
@@ -499,6 +527,7 @@
       ${facts}
       ${confKey(true)}
       ${fam ? `<h4>Family on this line</h4>${collapse}<ul class="fam">${fam}</ul>` : collapse}
+      ${siblingsSection(p)}
       ${otherFamily(p)}
       ${sourcesSection(p.sources, p)}
       ${from === "table" ? `<div class="actions"><button class="btn" data-show="${p.id}">Show in fan chart</button></div>` : ""}`;
@@ -527,7 +556,8 @@
       })()}
       ${q.note ? `<p class="note">${linkify(esc(q.note), q.id)}${tags(q.s)}</p>` : ""}
       <h4>Related to</h4><ul class="fam rel-of">${links}</ul>
-      ${sourcesSection(q.s, null)}`;
+      ${siblingsSection(q)}
+      ${sourcesSection(q.s, q)}`;
     return { head, body, onChart: false, anchor: a0.id };
   }
 
