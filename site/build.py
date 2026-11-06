@@ -43,6 +43,8 @@ import pwa  # noqa: E402  (icons, manifest, service worker)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
 from gklib import (is_placeholder, other_family_warnings, process_note_warnings,  # noqa: E402
                    process_sidecar_warnings, process_source_text_warnings, project_files)  # shared with tools/check_ids.py
+from names import (apply_display_names, attach_possible_matches,  # noqa: E402
+                   match_edges, spec_name_warnings)
 from siblings import attach_siblings, sibling_coverage_warnings  # noqa: E402
 
 WEB = os.path.join(HERE, "web")
@@ -112,7 +114,8 @@ def configure(config_path):
                           ("OCC", {}), ("AKA", {}), ("SOURCE_TITLES", {}), ("RELATIVES", {}), ("OTHER_FAMILY", {}),
                           ("GAZETTEER", set()), ("PLACE_ALIASES", {}), ("UNLINKED_SOURCES", []),
                           ("RESTRICTED_SOURCES", {}), ("PUBLIC_RECENT_SOURCES", set()),
-                          ("FAMILY_ASSERTIONS", []), ("SIBLING_EXCLUSIONS", []), ("CANONICAL_ALIASES", {})):
+                          ("FAMILY_ASSERTIONS", []), ("SIBLING_EXCLUSIONS", []), ("CANONICAL_ALIASES", {}),
+                          ("NAME_FORMS", {}), ("POSSIBLE_MATCHES", []), ("MATCH_EXCLUSIONS", [])):
         if not hasattr(spec, name):
             setattr(spec, name, default)
     if not hasattr(spec, "PEOPLE") or not hasattr(spec, "LINES"):
@@ -709,6 +712,97 @@ def strip_html(h):
     return re.sub(r"\s+", " ", htmllib.unescape(t)).strip()
 
 
+def _emit_match_relative(key, q, known, warnings):
+    """A possible-match person who is not already on a panel. Not merged into anyone."""
+    if base_conf(q.get("conf")) not in CONFS:
+        warnings.append(f"relative {key}: bad confidence {q.get('conf')!r}")
+        return None
+    by = q.get("by")
+    name_only = bool(q.get("name_only")) or (
+        PUBLISH == "strict" and is_possibly_living(by, q.get("dead") or bool(q.get("died"))))
+    ss = [x for x in (q.get("src") or []) if x in known or warnings.append(
+        f"relative {key} cites unknown source {x}")]
+    item = {"id": "r-" + key, "name": q.get("name") or key, "conf": q.get("conf"),
+            "s": ss, "nameOnly": name_only, "anchors": [], "siblings": [], "matchOnly": True}
+    if not name_only:
+        for fld in ("years", "born", "died", "places", "note"):
+            if q.get(fld):
+                item[fld] = q[fld]
+    return item
+
+
+def attach_name_spellings(people, rels, warnings, sources_md_text, known_sources):
+    """Display titles, Also-recorded spellings, and possible-match links.
+
+    Possible matches stay separate people. ``CANONICAL_ALIASES`` is not changed.
+    """
+    rel_spec = getattr(spec, "RELATIVES", {}) or {}
+    forms = getattr(spec, "NAME_FORMS", {}) or {}
+    matches = getattr(spec, "POSSIBLE_MATCHES", []) or []
+    exclusions = getattr(spec, "MATCH_EXCLUSIONS", []) or []
+    aliases = getattr(spec, "CANONICAL_ALIASES", {}) or {}
+    pseudo = getattr(spec, "PSEUDO_SOURCES", {}) or {}
+    for w in spec_name_warnings(
+            spec.PEOPLE, rel_spec, forms, matches, exclusions, aliases,
+            sources_md=sources_md_text, pseudo_sources=pseudo, known_sources=known_sources):
+        warnings.append(w)
+    people_ids = {p["id"] for p in people}
+    rel_ids = set(rels)
+    for key in rel_spec:
+        rel_ids.add(key if str(key).startswith("r-") else "r-" + str(key))
+    by_person = {p["id"]: p for p in people}
+    for edge in match_edges(matches, people_ids, rel_ids):
+        for sid in (edge["a"], edge["b"]):
+            if sid in by_person or sid in rels or not str(sid).startswith("r-"):
+                continue
+            key = sid[2:]
+            q = rel_spec.get(key)
+            if not q:
+                continue
+            item = _emit_match_relative(key, q, known_sources, warnings)
+            if not item:
+                continue
+            other = edge["b"] if sid == edge["a"] else edge["a"]
+            if other in by_person:
+                item["anchors"] = [{"id": other, "rel": "Possible match", "group": "Possible match"}]
+            rels[sid] = item
+    rows = list(people) + list(rels.values())
+    apply_display_names(rows, forms, _source_texts(sources_md_text, pseudo), known_sources)
+    for p in people:
+        for group in p.get("other") or []:
+            for it in group.get("items") or []:
+                other = rels.get("r-" + it["key"])
+                if other:
+                    it["name"] = other["name"]
+    rows_by_id = {p["id"]: p for p in people}
+    rows_by_id.update(rels)
+    people_ids = {p["id"] for p in people}
+    rel_ids = set(rels)
+    attach_possible_matches(rows_by_id, match_edges(matches, people_ids, rel_ids))
+    for edge in match_edges(matches, people_ids, rel_ids):
+        for sid in (edge["a"], edge["b"]):
+            row = rows_by_id.get(sid)
+            if not row:
+                continue
+            bucket = row.get("sources") if "sources" in row else row.get("s")
+            if bucket is None:
+                continue
+            for s in edge["s"]:
+                if s in known_sources and s not in bucket:
+                    bucket.append(s)
+
+
+def _source_texts(sources_md_text, pseudo):
+    from gklib import source_entries
+    texts = {sid: e.get("text") or "" for sid, e in source_entries(sources_md_text or "").items()}
+    for uid, meta in (pseudo or {}).items():
+        if isinstance(meta, dict):
+            texts.setdefault(str(uid), str(meta.get("title") or ""))
+        else:
+            texts.setdefault(str(uid), str(meta or ""))
+    return texts
+
+
 def build_relatives(people):
     """Other-family people (not on the fan), keyed "r-<key>", with the fan people they hang off."""
     out = {}
@@ -808,6 +902,9 @@ def build_search(people, rels, srcs):
             alt = "; ".join(x["t"] for x in r["f"]["aka"])
         if not r["nameOnly"]:
             alt = "; ".join(x for x in (alt, r.get("born", ""), r.get("died", ""), r.get("note", "")) if x)
+        spell = _spelling_alt(r)
+        if spell:
+            alt = "; ".join(x for x in (alt, spell) if x)
         ppl.append({"id": r["id"], "name": r["name"], "alt": alt, "sub": "Home person" if r["gen"] == 0 else r["relation"]})
         if not r["nameOnly"]:
             for part in r["f"].get("places") or []:
@@ -818,9 +915,14 @@ def build_search(people, rels, srcs):
                         add_place(nm, sid=x)
     known = {_pfold(n) for n in places} | {_pfold(n) for n in spec.GAZETTEER}
     for k, q in rels.items():
-        a = q["anchors"][0]
-        ppl.append({"id": k, "name": q["name"], "alt": " ".join(str(q.get(f, "")) for f in ("years", "born", "died", "places", "note")).strip(),
-                    "sub": f"{a['rel']} · {byid[a['id']]['name']}", "off": 1})
+        a = (q.get("anchors") or [{}])[0]
+        anchor = byid.get(a.get("id"))
+        rel_alt = " ".join(str(q.get(f, "")) for f in ("years", "born", "died", "places", "note")).strip()
+        spell = _spelling_alt(q)
+        if spell:
+            rel_alt = " ".join(x for x in (rel_alt, spell) if x)
+        sub = f"{a.get('rel') or 'Relative'} · {anchor['name']}" if anchor else (a.get("rel") or "Not on the chart")
+        ppl.append({"id": k, "name": q["name"], "alt": rel_alt, "sub": sub, "off": 1})
         for nm in place_names("; ".join(str(q.get(f, "")) for f in ("born", "died", "places"))):
             if _pfold(nm) in known:
                 add_place(nm, pid=k)
@@ -924,7 +1026,8 @@ def build_sources(people, sources_md, side, warnings, img_out, rels=None):
     all_cited |= set(getattr(spec, "UNLINKED_SOURCES", ()))  # shown on the site but not tied to anyone
     # "cited for": which people/fields cite each source
     labels = {"born": "birth", "died": "death", "places": "places", "occ": "occupation", "aka": "names",
-              "link": "parentage", "spouse": "marriage", "other": "other family", "sibling": "sibling"}
+              "link": "parentage", "spouse": "marriage", "other": "other family", "sibling": "sibling",
+              "match": "possible match"}
     cited = {}
     for r in people:
         uses = {}
@@ -945,10 +1048,11 @@ def build_sources(people, sources_md, side, warnings, img_out, rels=None):
     for q in rels.values():
         uses = {}
         sib = set(q.pop("siblingSrc", ()) or ())
+        cite = labels["match"] if q.pop("matchOnly", None) else labels["other"]
         for s in q.get("s") or []:
             if s in sib:
                 uses.setdefault(s, []).append(labels["sibling"])
-            uses.setdefault(s, []).append(labels["other"])
+            uses.setdefault(s, []).append(cite)
             cited.setdefault(s, []).append(
                 {"id": q["id"], "what": sorted(set(uses[s]), key=list(labels.values()).index)})
     out, img_seen, n_img = {}, {}, 0
@@ -1066,13 +1170,34 @@ def vendor(dst):
         f.write(f"===== fuse.js {fver} (Apache-2.0) =====\n" + open(os.path.join(fz, "LICENSE")).read() + "\n")
 
 
+def _spelling_alt(row):
+    """Family spellings (sounds-like hints) and other recorded spellings, for search."""
+    bits = [x.get("name") for x in (row.get("alsoRecorded") or []) if isinstance(x, dict) and x.get("name")]
+    bits += [s for s in (row.get("soundsLike") or []) if s]
+    return " ".join(bits)
+
+
 def name_tokens():
     """Every surname-like word in the spec (people and relatives), lower-cased, for the privacy checks."""
     toks = set()
-    for q in list(spec.PEOPLE) + list(spec.RELATIVES.values()):
-        for w in re.findall(r"[^\W\d_]{3,}", q.get("name", "")):
+
+    def take(text):
+        for w in re.findall(r"[^\W\d_]{3,}", text or ""):
             if w[0].isupper() and w.lower() not in ("née", "vel", "the", "von", "van", "del", "de", "la"):
                 toks.add(_pfold(w))
+
+    for q in list(spec.PEOPLE) + list(spec.RELATIVES.values()):
+        take(q.get("name", ""))
+    for form in (getattr(spec, "NAME_FORMS", {}) or {}).values():
+        if not isinstance(form, dict):
+            continue
+        take(form.get("record") or "")
+        take(form.get("family") or "")
+        for al in form.get("aliases") or []:
+            if isinstance(al, dict):
+                take(al.get("name") or al.get("spelling") or "")
+            elif isinstance(al, str):
+                take(al)
     for lab in spec.LINES.values():
         for w in re.findall(r"[^\W\d_]{3,}", lab):
             if w.lower() not in ("home", "person", "paternal", "maternal", "line"):
@@ -1095,7 +1220,8 @@ def short_hash(path):
 
 def build():
     warnings = []
-    sources_md = parse_sources(read("sources.md"))
+    sources_raw = read("sources.md")
+    sources_md = parse_sources(sources_raw)
     people_md = read("people.md")
     read("relationships.md"); read("leads.md")  # inputs (checked for presence)
     side = load_sidecars()
@@ -1110,6 +1236,7 @@ def build():
         aliases=getattr(spec, "CANONICAL_ALIASES", {}),
         known_sources=known_sources,
     )
+    attach_name_spellings(people, rels, warnings, sources_raw, known_sources)
     relationships_md = read("relationships.md")
     collateral_texts = []
     for path in sorted(glob.glob(os.path.join(GEN_DIR, "collateral", "*.md"))):

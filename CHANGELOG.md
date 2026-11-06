@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.17 (2026-11-06)
+- **Name spelling.** The title uses the spelling on the earliest or most official record (a civil or church birth, marriage, or death act outranks an index, a transcription, or a secondary source). A different family spelling is shown in parentheses — `Record Spelling (Family Spelling)` — and kept as a search hint. It never replaces the record. If no record exists yet, the family spelling is the title. Every other documented spelling is listed under **Also recorded as**, each with its source.
+- A suspected same person stays unmerged. The panel says **Possible match**. A merge is only `CANONICAL_ALIASES`, and only after the user says the two records are one person. `NAME_FORMS`, `POSSIBLE_MATCHES`, and `MATCH_EXCLUSIONS` record the spellings, the candidates, and the pairs that are not the same person.
+- `tools/check_ids.py --spec` and the site build warn when a title disagrees with a cited record spelling, when an alias or record spelling has no source, and when two people share a near-identical name and birth years within 8 years with no possible-match or exclusion entry. The check does not merge anyone.
+
+
 ## v0.2.16 (2026-11-06)
 - **All known siblings** on every person panel, on the chart and off it. The list is the union of shared recorded parents and explicit sibling or half-sibling links, deduplicated and reciprocal, and each link keeps its own confidence and sources (not the other person's identity confidence). Fan positions are unchanged. Optional `FAMILY_ASSERTIONS`, `SIBLING_EXCLUSIONS`, and `CANONICAL_ALIASES` in the spec cover cross-chart siblings, unresolved identities, and aliases without guessing from names.
 - **Recording rule** for anyone building a tree: when a person is recorded, record every known sibling and their parents. Encode the relationship through shared parents, or through an explicit sibling list with a citation and a confidence on that link. Every person's page lists all known siblings.

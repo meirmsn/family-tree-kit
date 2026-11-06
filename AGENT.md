@@ -71,6 +71,13 @@ for elders, in the family's language — at the end.
   siblings. Encode each sibling relationship through shared parents, or through an explicit sibling
   list that carries its own citation and confidence. Do not leave a sibling only in a prose aside.
   On the site, every person's page — on the chart and off it — lists all known siblings.
+- **Name spelling.** The title uses the spelling on the earliest or most official record (a civil
+  or church birth, marriage, or death act outranks an index, a transcription, or a secondary
+  source). If the family gave a different spelling, the title is `Record Spelling (Family Spelling)`.
+  Family spellings are often phonetic; they never replace a record, and they stay as search hints.
+  If no record exists yet, the family spelling is the title. Every other documented spelling is
+  listed under **Also recorded as**, each with its source. A suspected same person is shown as a
+  **possible match** and is not merged unless the user explicitly says so (`METHODOLOGY.md` §2.9).
 
 ## Step 4 — First research pass in a background worker
 - Write the brief from `agent/WORKER_BRIEF.md` + `agent/briefs/first-pass.md`: project path, folders
@@ -125,7 +132,12 @@ family group: shared parents and explicit sibling lists (with a citation and a c
 link) both feed **All known siblings** on every on-chart person and every off-chart relative.
 `check_ids.py --spec` warns when a named sibling or a child of a couple is not encoded as a linked
 person, when a sibling link is not reciprocal, or when a panel would show fewer siblings than the
-files record. Build, look at it
+files record. The same check warns when a title spelling disagrees with a cited record spelling,
+when an alias has no source, or when two people share a near-identical name and close birth years
+with no possible-match or exclusion entry (`NAME_FORMS`, `POSSIBLE_MATCHES`, `MATCH_EXCLUSIONS`;
+a merge is only `CANONICAL_ALIASES`, and only after the user says so). The panel title is
+`Record Spelling (Family Spelling)` when those differ, then **Also recorded as** and **Possible match**.
+Build, look at it
 locally, then `--deploy` (pre-check → upload → post-check). Log the deployment id and checks.
 Never put a surname in the project name, domain, title or app name.
 

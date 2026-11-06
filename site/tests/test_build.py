@@ -150,6 +150,37 @@ class BuildExample(unittest.TestCase):
         self.assertTrue(any(c["id"] == "p4" and "sibling" in c["what"] for c in cited))
         self.assertTrue(any(c["id"] == "r-ida" and "sibling" in c["what"] for c in cited))
 
+    def test_name_spelling_and_possible_match(self):
+        """Fictional example: record spelling, family spelling in parentheses, other spellings, unmerged match."""
+        import names
+        by = {p["id"]: p for p in self.data["people"]}
+        lena = by["p9"]
+        self.assertEqual(lena["name"], "Lena Marrow (Lina)")
+        self.assertEqual(lena["alsoRecorded"], [{"name": "Liena Marrow", "s": ["S2"]}])
+        self.assertEqual(lena["soundsLike"], ["Lina"])
+        self.assertEqual(by["p11"]["name"], "Clara W[?] (Clara Wendt)")
+        self.assertNotIn("alsoRecorded", by["p11"])
+        match = by["p18"]["possibleMatches"]
+        self.assertEqual(match[0]["id"], "r-natan-index")
+        self.assertIn("not merged", match[0]["note"])
+        rel = self.data["relatives"]["r-natan-index"]
+        self.assertEqual(rel["name"], "Natan Corvell")
+        self.assertEqual(rel["possibleMatches"][0]["id"], "p18")
+        self.assertNotEqual(rel["id"], "p18")
+        search = json.load(open(os.path.join(self.out, "data", "search.json"), encoding="utf-8"))
+        alt = next(p["alt"] for p in search["people"] if p["id"] == "p9")
+        self.assertIn("Lina", alt)
+        self.assertIn("Liena Marrow", alt)
+        js = open(os.path.join(self.out, "assets", "app.js"), encoding="utf-8").read()
+        self.assertIn("Also recorded as", js)
+        self.assertIn("Possible match", js)
+        warns = names.spec_name_warnings(
+            build.spec.PEOPLE, build.spec.RELATIVES, build.spec.NAME_FORMS,
+            build.spec.POSSIBLE_MATCHES, build.spec.MATCH_EXCLUSIONS, build.spec.CANONICAL_ALIASES,
+            sources_md=open(os.path.join(SITE, "example", "data", "sources.md"), encoding="utf-8").read(),
+            pseudo_sources=build.spec.PSEUDO_SOURCES)
+        self.assertEqual(warns, [])
+
 
 class CollapseErrors(unittest.TestCase):
     def test_cycle_and_bad_child_refused(self):

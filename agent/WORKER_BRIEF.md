@@ -33,6 +33,10 @@ RULES (non-negotiable; from agent/rules.md and docs/research-process-lessons.md)
   the chart and off it (OTHER_FAMILY / RELATIVES, or FAMILY_ASSERTIONS when both are on the chart).
   Index-only hits stay leads; living/recent stay name-only (lessons §9). `check_ids.py --spec` warns
   when a named sibling is not linked, a sibling link is not reciprocal, or a panel would show fewer.
+- Name spelling (METHODOLOGY §2.9): the title is the earliest or most official record spelling.
+  A different family spelling goes in parentheses and does not replace the record. Other spellings
+  are kept with their sources. A suspected same person is a possible match, not a merge, until the
+  user says they are the same person.
 
 PASS: <N>  (heading in every file you touch: "## Pass <N> (<date>, <time range>, <S-range>, <P-range>; append-only)")
 

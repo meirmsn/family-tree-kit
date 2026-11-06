@@ -28,7 +28,7 @@ They add to `METHODOLOGY.md` and `agent/rules.md`; where they overlap, follow th
 - Be most suspicious of readings that match what you hoped to find. Machine or quick readings of old handwriting produce confident misreadings of surnames, given names and numbers (e.g. months read as years).
 - Re-check against the scan before marking anything CONFIRMED, and log reading corrections.
 - Record ages at death or marriage as a **birth-year range** (e.g. "born c. 1820–1830"), not a single year. Early-19th-century ages are often off by 5–10 years.
-- Treat spelling variants as possibly the same person until shown otherwise. Mark "PROBABLE same person" and give the reason.
+- A different spelling is not a reason to merge two records. Keep each spelling with its source. The title uses the earliest or most official record; a family spelling goes in parentheses and does not replace the record. Show a suspected same person as a **possible match**, and merge the two records only after the user explicitly says they are the same person (`METHODOLOGY.md` §2.9).
 
 ## 6. Conflicting records side by side
 - When two records disagree (e.g. different parents named in two acts), keep **both**, cite each, list the hypotheses, and label the conclusion SPECULATIVE.

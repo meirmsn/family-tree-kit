@@ -67,9 +67,13 @@ In spite of that — individuals already doing this with Grok Bot — **we creat
 - An optional **private** static site: circular fan chart, person panels with per-fact confidence
   styling, an **All known siblings** list on every on-chart and off-chart person, record lightbox
   with "why this record matters", fuzzy search, people table, open questions and archive-request
-  status. `check_ids.py --spec` and the build warn when a named sibling or child of a couple is
-  not encoded, a sibling link is not reciprocal, or a panel would list fewer siblings than the
-  files record.
+  status. A person's title uses the record spelling, with a different family spelling in
+  parentheses (`Record Spelling (Family Spelling)`); other spellings are listed as **Also recorded
+  as**, and a suspected same person is a **Possible match** until you say to merge.
+  `check_ids.py --spec` and the build warn when a named sibling or child of a couple is
+  not encoded, a sibling link is not reciprocal, a panel would list fewer siblings than the
+  files record, a title disagrees with a cited record spelling, an alias has no source, or two
+  people share a near-identical name and close birth years with no possible-match or exclusion.
 - Confidence shown as colored words in the legend (`confirmed`, `probable`, `possible`, `family
   lore` with a LORE pill) — no sample dates that look like real profile values.
 - Installable as a PWA (manifest, service worker, fan-chart icons) once the site is published behind
@@ -153,6 +157,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 ## Build log
 
 ### Research and data
+- **v0.2.17** — name spelling: the title follows the earliest or most official record; a family spelling goes in parentheses and does not replace it. `check_ids.py` and the build warn when a title disagrees with a cited record spelling, an alias has no source, or two near-identical names with close birth years have no possible-match or exclusion entry.
 - **v0.2.16** — record every known sibling and their parents (shared parents, or an explicit sibling list with citation and confidence). `check_ids.py` and the site build warn when those people are not linked, a sibling link is not reciprocal, or a panel would show fewer siblings than the files record.
 - **v0.1.0** — first kit: method, agent instructions, templates, tools, fictional example, migration feedback from earlier research work.
 - **v0.2.0–v0.2.1** — research-process lessons (backups, negatives, indexes-first, propose-before-changing links); confidence qualifiers; home-person merge and draft renumbering; private-words list required.
@@ -163,6 +168,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 - **v0.2.14** — same process-word lint on record sidecars: "Why this record matters", Notes, Summary.
 
 ### Site and docs
+- **v0.2.17** — person panels show `Record Spelling (Family Spelling)` when those differ, then **Also recorded as** (each spelling with its source) and **Possible match** for a candidate that is not merged.
 - **v0.2.16** — every person panel, on the chart and off it, lists all known siblings. Each link keeps its own confidence and sources. Fan positions stay the same.
 - **v0.2.4–v0.2.6** — README screenshots from the fictional example (including interactive panel, evidence and hover-tip shots).
 - **v0.2.7–v0.2.9** — credits and thanks; Inspiration (Pompliano); note of a future distributed-archive idea (not implemented).

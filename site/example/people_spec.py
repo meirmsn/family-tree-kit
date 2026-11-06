@@ -29,7 +29,7 @@ PEOPLE: direct ancestors only (the fan chart). Fields:
 FIELDS[id][field] = "conf|S1,S2" or a list (one per ";" part). Fields: born, died, places, occ, aka,
   link (parentage: this person is a parent of `child`), link_<child id> (parentage for a further child
   in a pedigree collapse), spouse (married the other parent of `child`).
-OCC, AKA: occupation and name variants per id.
+OCC, AKA: occupation and nicknames per id. Spelling variants are NAME_FORMS, not AKA.
 LINES: labels for the line keys (shown in the legend and filters; inside the protected site only).
 PSEUDO_SOURCES: U-numbers (family testimony).
 OPEN_QUESTIONS: the few key questions to show (the full open-questions.md stays private).
@@ -41,6 +41,11 @@ FAMILY_ASSERTIONS: optional parent/sibling edges that are not the fan `child` po
   (a, b, c, s, label). They do not move fan arcs and do not copy a chart person into RELATIVES.
 SIBLING_EXCLUSIONS: optional unordered id pairs that must not be shown as siblings (unresolved
   identities). Not inferred from names. CANONICAL_ALIASES: optional alias id → canonical id.
+  That map is a merge, and only after the user says the two records are one person.
+NAME_FORMS: record spelling + source, family spelling, and other spellings with sources.
+  The title is the record spelling, with the family spelling in parentheses when it differs.
+POSSIBLE_MATCHES: unmerged same-person candidates (shown as "Possible match").
+MATCH_EXCLUSIONS: pairs the user has decided are not the same person.
 GAZETTEER, PLACE_ALIASES: search places and spelling variants (keys folded: lower case, no accents).
 SOURCE_TITLES: hand-written titles; UNLINKED_SOURCES: shown although nobody cites them.
 RESTRICTED_SOURCES {S: reason}: never published. PUBLIC_RECENT_SOURCES: recent records allowed in strict mode.
@@ -72,7 +77,7 @@ PEOPLE = [
          places="Kestrava, Velmar", src=["S1", "S2"],
          note="Weaver. Father on the 1925 birth act (S1); groom on the 1921 marriage act (S2). "
               "Death not yet found; the family says he died in Kestrava before 1948."),
-    dict(id="p9", pid="P9", name="Lena (Lina) Marrow", sex="F", child="p4", line="pp", conf="confirmed",
+    dict(id="p9", pid="P9", name="Lena Marrow (Lina)", sex="F", child="p4", line="pp", conf="confirmed",
          born="c. 1899, Brindlow", by=1899, death=True, died="before 1948 (family)",
          places="Brindlow; Kestrava, Velmar", src=["S1", "S2"],
          note="Bride on the 1921 marriage act (S2), daughter of Aron Marrow and Rachel."),
@@ -95,7 +100,7 @@ PEOPLE = [
     dict(id="p10", pid="P10", name="Oskar Brannock", sex="M", child="p5", line="pm", conf="probable",
          born="c. 1900", by=1900, death=True, died="1944 (family)", places="Orvenna, Velmar", src=["S5", "S6"],
          note="Named as Helena's father on the 1952 marriage record (S5); a 1931 town list (S6) shows a tailor of this name."),
-    dict(id="p11", pid="P11", name="Clara Wendt", sex="F", child="p5", line="pm", conf="possible",
+    dict(id="p11", pid="P11", name="Clara W[?] (Clara Wendt)", sex="F", child="p5", line="pm", conf="possible",
          born="Unknown", by=1903, death=True, places="Orvenna, Velmar", src=["S5", "U2"],
          note="The 1952 record gives the mother as \u201cClara W[?]\u201d; the family remembers Wendt."),
 
@@ -117,7 +122,7 @@ PEOPLE = [
               "and Rachel (S13) is probably her. Lena Marrow (p9) would then be her sister."),
     dict(id="p18", pid="P18", name="Natan Corvell", sex="M", child="p12", line="mp", conf="possible",
          born="Unknown", by=1875, death=True, places="Kestrava, Velmar (probably)", src=["S9", "S10"],
-         note="Father's name from Elias's gravestone (S9). A Natan Corvell in the 1890s Kestrava index (S10) may be him: possible only."),
+         note="Father's name from Elias's gravestone (S9). The 1874 Kestrava birth index (S10) names Natan Corvell; that row is a possible match and is not merged."),
 
     # ---- mother's mother line (mm) ----
     dict(id="p7", pid="P7", name="Rosa Delmont", sex="F", child="p3", line="mm", conf="lore",
@@ -171,7 +176,7 @@ FIELDS = {
     "p19": dict(born="probable|S13", places="probable|S12,S13", link="probable|S12"),
     "p5": dict(born="probable|S5", died="lore|U1", places=["probable|S5", "lore|U1"], link="lore|U1"),
     "p10": dict(link="probable|S5", occ="possible|S6", died="lore|U2"),
-    "p11": dict(link="possible|S5,U2", aka="lore|U2"),
+    "p11": dict(link="possible|S5,U2"),
     "p6": dict(born="confirmed|S7", died="confirmed|S8", places="confirmed|S7,S8", link="lore|U1", spouse="lore|U1"),
     "p12": dict(born="probable|S9", died="confirmed|S9", places=["probable|S9", "confirmed|S7"], link="confirmed|S7",
                 spouse="confirmed|S7"),
@@ -183,7 +188,8 @@ FIELDS = {
 }
 
 OCC = {"p8": "Weaver", "p10": "Tailor (1931 town list, possible)", "p12": "Baker"}
-AKA = {"p9": "Lina", "p11": "Clara W[?] (1952 record)", "p12": "Eli"}
+# Nicknames only. Spellings live in NAME_FORMS (Lina is the family spelling of Lena, not a nickname).
+AKA = {"p12": "Eli"}
 
 SOURCE_TITLES = {}
 
@@ -194,6 +200,10 @@ RELATIVES = {
                      places="Saltreach, Ardenia", note="Elder brother of Samuel, named as a sibling on S7."),
     "nora": dict(name="Nora Ashdown", conf="lore", src=["U1"], by=1960,
                  note="Sister of Daniel (family knowledge)."),
+    # Index row kept as its own person. Same name as p18; not merged.
+    "natan-index": dict(name="Natan Corvell", conf="possible", src=["S10"], by=1874, dead=True,
+                        born="1874, Kestrava", places="Kestrava, Velmar",
+                        note="Named in the 1874 Kestrava birth index (S10). May be the father named on the Saltreach gravestone (S9). Not merged."),
 }
 
 OTHER_FAMILY = {
@@ -213,7 +223,42 @@ FAMILY_ASSERTIONS = []
 SIBLING_EXCLUSIONS = []
 
 # alias id → canonical id. Collapsed before sibling linking.
+# A merge: write this only after the user says the two records are one person.
+# Do not copy POSSIBLE_MATCHES here.
 CANONICAL_ALIASES = {}
+
+# Record spelling wins the title. Family spelling goes in parentheses and is a search hint.
+# aliases are every other documented spelling, each with a source.
+NAME_FORMS = {
+    "p9": {
+        "record": "Lena Marrow",
+        "record_source": "S2",
+        "record_kind": "act",
+        "record_year": 1921,
+        "family": "Lina",
+        "family_source": "U1",
+        "aliases": [
+            {"name": "Liena Marrow", "source": "S2", "kind": "act", "year": 1921},
+        ],
+    },
+    "p11": {
+        "record": "Clara W[?]",
+        "record_source": "S5",
+        "record_kind": "index",
+        "record_year": 1952,
+        "family": "Clara Wendt",
+        "family_source": "U2",
+    },
+}
+
+# Unmerged same-person candidates. The site says "Possible match" and does not combine them.
+POSSIBLE_MATCHES = [
+    {"a": "p18", "b": "natan-index", "sources": ["S9", "S10"],
+     "note": "Index row and gravestone name; not merged"},
+]
+
+# Pairs that are not the same person. Stops the near-name warning without merging anyone.
+MATCH_EXCLUSIONS = []
 
 GAZETTEER = {"Kestrava", "Brindlow", "Orvenna", "Velmar", "Ardenia", "Port Sallow", "Haverlow", "Saltreach"}
 PLACE_ALIASES = {"kestrawa": "Kestrava", "port salow": "Port Sallow"}
