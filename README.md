@@ -1,15 +1,46 @@
-# Family Tree Kit
+<a id="readme-top"></a>
 
-A research kit for **long-running AI agents** that trace a family's ancestry as far back as the
-records go — with every claim tied to a record the user can open — and, optionally, publish it as a
-**private** family-tree website behind a login.
+<div align="center">
+
+<img src="docs/screenshot-desktop.png" alt="family-tree-kit fan chart" width="720">
+
+# family-tree-kit
+
+**AI-agent research kit for cited family-history work, plus an optional private fan-chart site.**
+
+[What it does](#what-it-does) · [Privacy](#privacy) · [Run it](#run-it) · [Build log](#build-log)
+
+![Status](https://img.shields.io/badge/status-shipped-green)
+![Last commit](https://img.shields.io/github/last-commit/meirmsn/family-tree-kit)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+</div>
+
+<details>
+<summary>Contents</summary>
+
+- [Approach](#approach)
+- [What it does](#what-it-does)
+- [How it works](#how-it-works)
+- [Privacy](#privacy)
+- [Build log](#build-log)
+- [Limitations](#limitations)
+- [Run it](#run-it)
+- [License](#license)
+- [Credits and thanks](#credits-and-thanks)
+- [A future idea (not in this kit today)](#a-future-idea-not-in-this-kit-today)
+- [Feedback](#feedback)
+
+</details>
+
+Long-running AI agents trace a family's ancestry as far back as the records go — with every claim
+tied to a record the user can open — and, optionally, publish it as a private family-tree website
+behind a login.
 
 It contains the **method** (how to interview, search, read and cite records, handle collateral
 relatives and archive requests), the **agent instructions**, empty **templates** for the research
 files, small **tools**, and the **site generator**. It contains **no personal data**: every name,
 place and record in this repository belongs to an invented example family.
-
-![Fan chart](docs/screenshot-desktop.png)
 
 <p align="center"><img src="docs/screenshot-panel.png" width="49%" alt="Person panel and hover tip for the same person"> <img src="docs/screenshot-desktop-evidence.png" width="49%" alt="Record open, with why it matters"></p>
 
@@ -58,6 +89,8 @@ The method is spelled out in [METHODOLOGY.md](METHODOLOGY.md) and the agent brie
 
 In spite of that — individuals already doing this with Grok Bot — **we created this project so anyone can do it**: the research method, agent instructions, templates, tools, and a private family-tree site kit, not gatekept to one person’s bot.
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## What it does
 
 - A full research method for long-running agents: interview, recursive search, evidence handling,
@@ -80,6 +113,8 @@ In spite of that — individuals already doing this with Grok Bot — **we creat
   a login.
 - A fictional example family only in this repo; real trees live in a private folder the agent
   creates.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## How it works
 
@@ -133,6 +168,8 @@ See [FEATURES.md](FEATURES.md) and [SECURITY.md](SECURITY.md).
 | [migrations/](migrations/) | data-shape scripts the upgrade command runs, one file per version that needs one |
 | [site/](site/) | the generator (`build.py`, `pwa.py`, `web/`), config, the fictional example, tests |
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## Privacy
 
 Personal data belongs only in the private project folder and, if you deploy, behind a login. This
@@ -154,6 +191,8 @@ secrets leak into the public kit — they are filters and review steps, **not a 
 
 Treat these as layers that lower risk. Always assume a check can miss something; review before
 anything goes public. Details: [SECURITY.md](SECURITY.md).
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## Build log
 
@@ -180,6 +219,8 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 
 Full notes: [CHANGELOG.md](CHANGELOG.md).
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## Limitations
 
 - **No linking across trees.** Each family tree is its own private project folder. `new_project.py`
@@ -203,6 +244,8 @@ Full notes: [CHANGELOG.md](CHANGELOG.md).
   Access for that tree. GitHub Pages and other public static hosts are not suitable.
 - **Handwriting and indexes remain hard.** Misreadings and weak index hits are expected; the method
   treats indexes as leads and keeps reading corrections append-only.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## Run it
 
@@ -259,11 +302,15 @@ offers **Save for offline use**, which keeps the site on the device for offline 
 to the home screen (the browser’s **Add to Home Screen** / **Install**) and it opens like an app,
 with the circular fan icon. The generator ships the manifest, service worker and icons.
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## License
 
 MIT for the code and docs (see [LICENSE](LICENSE)). Vendored libraries keep their own licences:
 D3 (ISC) and Fuse.js (Apache-2.0), copied into each build's `vendor/LICENSES.txt`.
 Third-party notes, and the still-open choice for the docs, are in [NOTICE](NOTICE).
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
 ## Credits and thanks
 
@@ -278,6 +325,16 @@ Optional screenshot tooling for the fictional example only: [Playwright](https:/
 
 The data structure, person panel and record lightbox were designed for this kit; the repo does not document borrowing them from another family-tree product, so none is credited here. If you recognise an influence we missed, please tell us and we will gladly add it.
 
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
 ## A future idea (not in this kit today)
 
 Separately, we would like to see a **distributed volunteer / distributed-compute archive project**: people (and their agents) could **optionally** contribute lightweight **text findings**, proofs, and links — and, if images are involved at all, only **minimal processed record snippets** — so others can reuse hard-won archive leads without reinventing the search. **Personal trees would not live in a central store.** This kit does **not** implement that; it remains a local/private research + site kit. Contributions, if any such network appears later, would be opt-in and separate from your private tree folder.
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
+
+## Feedback
+
+Questions, bugs, and ideas: [open an issue](https://github.com/meirmsn/family-tree-kit/issues).
+
+<p align="right"><small><a href="#readme-top">back to top</a></small></p>
