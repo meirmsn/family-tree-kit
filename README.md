@@ -318,6 +318,7 @@ This kit stands on the shoulders of giants. With real gratitude to the people wh
 - **[webtrees fan chart](https://github.com/magicsunday/webtrees-fan-chart)** by [Rico Sonntag (magicsunday)](https://github.com/magicsunday), a module for [webtrees](https://webtrees.net/) — the inspiration for our fan chart's look and layout (already noted in `fan.js` and the site footer). Our `fan.js` is written from scratch, but the idea came from this lovely project.
 - **[Fuse.js](https://www.fusejs.io/)** ([GitHub](https://github.com/krisk/Fuse)) by Kiro Risk and contributors — fuzzy search over people, places and records (`site/web/search.js`). Apache-2.0; copied into `vendor/`.
 - **[Pillow](https://python-pillow.org/)** ([GitHub](https://github.com/python-pillow/Pillow)), the friendly PIL fork by Jeffrey A. Clark and contributors — record-image re-encoding, PWA icons and image helpers in `tools/`.
+- Thanks to Anthony Pompliano — see [Inspiration](#inspiration).
 
 Optional screenshot tooling for the fictional example only: [Playwright](https://playwright.dev/). Deploy uses Cloudflare Pages / Access via Wrangler (`npx`); that is hosting, not a vendored library.
 
