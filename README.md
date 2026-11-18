@@ -4,7 +4,7 @@
 
 <img src="docs/screenshot-desktop.png" alt="family-tree-kit fan chart" width="720">
 
-# family-tree-kit
+# Family Tree Kit
 
 **AI-agent research kit for cited family-history work, plus an optional private fan-chart site.**
 
@@ -194,6 +194,11 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 
 ## Build log
 
+Full notes: [CHANGELOG.md](CHANGELOG.md).
+
+<details>
+<summary>Show all 17 entries</summary>
+
 ### Research and data
 - **v0.2.18** — `tools/upgrade.py` backs up a project, runs any data-shape migrations newer than `KIT_VERSION`, and runs the id and build checks. v0.2.16 and v0.2.17 migrations add empty spec fields when they are missing.
 - **v0.2.17** — name spelling: the title follows the earliest or most official record; a family spelling goes in parentheses and does not replace it. `check_ids.py` and the build warn when a title disagrees with a cited record spelling, an alias has no source, or two near-identical names with close birth years have no possible-match or exclusion entry.
@@ -215,7 +220,7 @@ anything goes public. Details: [SECURITY.md](SECURITY.md).
 - **v0.2.11** — first public release of the kit.
 - **v0.2.13** — confidence legend colors the words themselves; no sample date values like "1912".
 
-Full notes: [CHANGELOG.md](CHANGELOG.md).
+</details>
 
 <p align="right"><small><a href="#readme-top">back to top</a></small></p>
 
