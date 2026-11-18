@@ -79,9 +79,7 @@ The method is spelled out in [METHODOLOGY.md](METHODOLOGY.md) and the agent brie
 
 ### Inspiration
 
-[Anthony Pompliano](https://x.com/APompliano) wrote about setting up a **Genealogist Bot** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
-
-[Anthony Pompliano](https://x.com/APompliano) — [Genealogist Bot (X)](https://x.com/APompliano/status/2116967151537996188)
+[Anthony Pompliano](https://x.com/APompliano) wrote about setting up a **[Genealogist Bot](https://x.com/APompliano/status/2116967151537996188)** with Grok Bot and digging deep into his own family history — a vivid public example of what one person can already do with a capable agent:
 
 [![Anthony Pompliano’s public post about using a Genealogist Bot with Grok Bot](docs/inspiration-pompliano.png)](https://x.com/APompliano/status/2116967151537996188)
 
